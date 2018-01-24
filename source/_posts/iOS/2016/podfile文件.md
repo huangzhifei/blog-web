@@ -1,4 +1,6 @@
-## podfile文件
+---
+title: podfile文件
+---
 
 ### 单target的podfile文件
 
@@ -57,12 +59,12 @@ pod 'AFNetworking', '~>0'     	//高于0的版本，写这个限制和什么都�
 
 #### 引入master分支（默认）
 	pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git'
-	
+
 #### 引入指定的分支
 	pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :branch => 'dev'
 
 #### 引入某个节点的代码
 	pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
-	
+
 #### 引入某个特殊的提交节点
 	pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :commit => '082f8319af'

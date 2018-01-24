@@ -1,6 +1,8 @@
-## git之最基本命令
+---
+title: git之最基本命令
+---
 
-### **会持续更新......**
+**会持续更新......**
 
 建议大家直接看 git 的官方翻译 [https://git-scm.com/book/zh/v1]()
 
@@ -12,6 +14,7 @@
 ## 状态相关命令
 
 ### 1、重置一些文件的修改
+
 这个可能要分点情况(仔细看命令行就有提示)
 
 **a、此文件已经在版本控制中，但是还没有被add(也就是不是新加的文件)**
@@ -22,7 +25,7 @@ a、在使用 git status 查看的时候，就会提示你这些命令，使用�
 git checkout -- file
 ```
 这样就能重置之前的修改
-   
+
 **b、此文件已经在版本控制中，并且已经 add 了**
 
 b、在使用 git status 查看的时候，就会提示你下面的命令
@@ -31,7 +34,7 @@ b、在使用 git status 查看的时候，就会提示你下面的命令
 git reset HEAD file
 ```
 这样就能把刚才 add 的此文件移出来，然后在使用 a 的命令
-   
+
 ### 2、修改本地最后一次的commit
 
 有时候我们提交完了才发现漏掉了几个文件没有加，或者说提交信息写错了，又或者在次修改了某一个很小的地方，想要撤消刚才的commit，可以使用
@@ -52,7 +55,7 @@ git commit --amend
 ### 3、丢弃本地所有改动
 
 ```
-git reset --hard 
+git reset --hard
 或
 git reset --hard origin/master
 ```
@@ -165,8 +168,8 @@ git push origin :refs/tags/xxx
 前面的操作都是在本的做的，最后我们都要把操作更新到远端的
 
 ```
-git push --tag 或 
-git push --tags 或 
+git push --tag 或
+git push --tags 或
 git push origin --tags
 ```
 这是把本地所有的 tag 全部推送到远端
@@ -241,4 +244,3 @@ git merge dev_1
 ```
 
 先切到 master 分支上面，然后合并 dev_1 到 master 上面，如果有冲突就解决冲突，然后提交 commit， 最后 push，如果没有冲突，就正常提交 commit，然后 push
-

@@ -1,15 +1,17 @@
-## git之修改tag对应的代码
+---
+title: git之修改tag对应的代码
+---
 
 如何取到 git 已经打好的 tag 所对应的代码了？
 
-1、直接检出 tag 对应的代码
+### 1、直接检出 tag 对应的代码
 
 ```
 git checkout tag_name
 ```
 这样是可以得到相应 tag 的代码，但是这个时候 git 会提示你当前处于一个 “detached HEAD”的状态，因为 tag 是一个快照，是不能更改他的代码。
 
-2、根据 tag 创建对应的分支
+### 2、根据 tag 创建对应的分支
 
 ```
 git checkout -b branch_name tag_name

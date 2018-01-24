@@ -1,22 +1,26 @@
-## 创建自定义bundle
+---
+title: 创建自定义bundle
+---
 
 bundle 文件在运行的时候不会被编译，此文件最好是存放一些静态资源文件。
 
-#### 创建 bundle 文件
+### 创建 bundle 文件
 
-##### 1、右键 -> New File -> iOS -> Resource -> Settings Bundle
+#### 1、右键 -> New File -> iOS -> Resource -> Settings Bundle
+
 见下图：
 
 ![](https://github.com/huangzhifei/huangzhifei.github.com/raw/master/images/bundle.png)
 
-##### 2、随便起个名字就行了，不需要去带.bundle后缀
+#### 2、随便起个名字就行了，不需要去带.bundle后缀
 
-##### 3、里面会自动生成一些文件，不需要的直接删掉，添加自己的文件或文件夹
+#### 3、里面会自动生成一些文件，不需要的直接删掉，添加自己的文件或文件夹
 
 
-#### 使用自定义的 bundle 文件
+### 使用自定义的 bundle 文件
 
-##### 1、错误的使用方法
+#### 1、错误的使用方法
+
 我们总是习惯性的 Command + 单击，看里面有哪些方法，会发现下面这个方法
 
 ```
@@ -51,7 +55,7 @@ The previously created NSBundle instance that has the bundle identifier identifi
 ```
 
 
-##### 2、正确的使用方法
+#### 2、正确的使用方法
 
 a、获取自定义的 .bundle 文件的路径
 
@@ -74,4 +78,3 @@ b、在引用图片的时候在使用方法就可以获取到YPhotoBundle.bundle
     return [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingPathComponent:@"未选中.png"]];
 }
 ```
-

@@ -1,4 +1,6 @@
-## 手势中cancelsTouchesInView属性
+---
+title: 手势中cancelsTouchesInView属性
+---
 
 UIGestureRecognizer 中一个属性，默认值为YES，使用场景：
 
@@ -24,6 +26,3 @@ tapGesture.cancelsTouchesInView = NO;
 ```
 
 就 ok 了，看了 API 介绍总结一句话：cancelsTouchesInView 为 NO 时，在 parentView 加上的手势就能不冲突的跟原本 subview 中的元件 tap 事件同时被触发。
-
-
-

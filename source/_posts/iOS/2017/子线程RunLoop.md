@@ -1,5 +1,6 @@
-
-## 子线程RunLoop
+---
+title: 子线程RunLoop
+---
 
 参考文章：
 [https://juejin.im/entry/587c2c4ab123db005df459a1]()
@@ -32,7 +33,7 @@ RunLoop 就是为线程而生的，线程的作用就是执行一个特定的任
 
 6、简单的运行逻辑如下图
 
-![](https://github.com/huangzhifei/huangzhifei.github.com/raw/master/images/RunLoop.png) 
+![](https://github.com/huangzhifei/huangzhifei.github.com/raw/master/images/RunLoop.png)
 
 
 ### RunLoop 常见场景
@@ -60,4 +61,3 @@ App 启动后，苹果在主线程 RunLoop 里注册了两个 Observer
 第二监视了两个事件：BeforeWaiting(准备进入休眠) 和 Exit(即将退出Loop)，用来释放旧的池并创建新的池和释放自动释放池。
 
 在主线程中执行的代码，都被线程自动创建好的 AutoreleasePool 环绕着，所以一般不会出现内存泄漏。
-

@@ -1,5 +1,6 @@
-
-## git之cherry-pick
+---
+title: git之cherry-pick
+---
 
 cherry-pick 可以选择某一个分支中的一个或多个commit来进行操作。
 
@@ -13,7 +14,7 @@ git cherry-pick commit id commit id commit id
 commit id 就是每条 commit 的 hash 值，这条命令可以同时 pick 出多条 commit，并列写出多条 commit id 就行了，commit id 我们可以只写前几位，当我们执行完 cherry-pick 后，将会生成一个新的提交，这个新的提交的 hash 值和原来的不同，但是标识名是一样的。
 
 
-### 简单用法 
+### 简单用法
 
 ```
 git checkout v2.0
@@ -44,7 +45,7 @@ Date:   Mon Nov 20 11:16:52 2017 +0800
 	hint: after resolving the conflicts, mark the corrected paths
 	hint: with 'git add <paths>' or 'git rm <paths>'
 	hint: and commit the result with 'git commit'
-	
+
 就根普通的冲突一样，手工解决一下。
 
 #### 1、使用 git status 查看哪些文件出现冲突
@@ -94,5 +95,3 @@ git cherry-pick --abort
 参考文章：
 
 [http://www.jianshu.com/p/08c3f1804b36]()
-
-

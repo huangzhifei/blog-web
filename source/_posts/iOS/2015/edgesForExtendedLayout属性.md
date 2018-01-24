@@ -1,6 +1,9 @@
-## edgesForExtendedLayout属性
+---
+title: edgesForExtendedLayout属性
+---
 
 ### 方法一
+
 在iOS 7后新增了下面这两个属性
 
 ```oc
@@ -14,6 +17,7 @@ self.automaticallyAdjustsScrollViewInsets=NO;
 所以要使用上面的代码来杜绝这种情况。
 
 ### 方法二
+
 **关闭导航栏半透明**
 
 在iOS 6及之前，translucent默认都是NO，但是在iOS 7开始就默认都是YES了，所以我们要关闭掉，特别是我们给导航栏设置统一的颜色时，如果不关闭半透明，颜色值就永远设置不对，并且会影响两个页面push的动画。

@@ -1,4 +1,6 @@
-## StatusBar的故事
+---
+title: StatusBar的故事
+---
 
 ### 隐藏与显示
 
@@ -6,7 +8,7 @@
 
 ```
 [UIApplication sharedApplication].statusBarHidden = YES;
-或者通过 
+或者通过
 [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:YES]
 ```
 iOS7.0 之后，这两个全局的方法不好用，本身这种全局方法在使用的时候就比较坑，因为可能只是某几个页面需要更改样式，改完后在页面切换的时候还要还原，但是如果使用下面提供的新的方法，就只会在当前页面有效果，系统会帮我们还原，并且效果会比我们自己控制的还原要好
@@ -43,4 +45,3 @@ iOS7.0 之后，这两个全局的方法不好用，本身这种全局方法在�
 <string>UIStatusBarStyleDefault</string>
 ```
 值可以选择。
-

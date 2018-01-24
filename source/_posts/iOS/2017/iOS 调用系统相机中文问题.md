@@ -1,12 +1,14 @@
-## iOS 调用系统相机中文问题-备忘
+---
+title: iOS 调用系统相机中文问题-备忘
+---
 
 ### 方法一
-在 info.plist 里面增加 key-value 
+在 info.plist 里面增加 key-value
 
 Localized resources can be mixed = YES
 
 ### 方法二
-在 info.plist 里面增加 key-value 
+在 info.plist 里面增加 key-value
 
 Localization native development region = China
 

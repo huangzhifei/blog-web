@@ -1,4 +1,6 @@
-## code sign error
+---
+title: code sign error
+---
 
 Command /usr/bin/codesign failed with exit code 1
 
@@ -11,4 +13,3 @@ Command /usr/bin/codesign failed with exit code 1
 [https://support.apple.com/ro-ro/HT201609]()
 
 其实就是强制重新修改钥匙串的密码来让他更新，这样xcode在编译后就会重新弹出框，输入正确密码就好了。
-

@@ -1,4 +1,6 @@
-## UITableView的单选与多选
+---
+title: UITableView的单选与多选
+---
 
 #### 1、非编辑模式
 
@@ -21,4 +23,4 @@ self.tableView.allowsMultipleSelectionDuringEditing = YES; //  编辑模式下�
 ```
 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 ```
-你就始终无法选择上那行 cell 
+你就始终无法选择上那行 cell

@@ -1,4 +1,6 @@
-## MGSwipeTableCell实现原理简单分析
+---
+title: MGSwipeTableCell实现原理简单分析
+---
 
 先上链接地址 [MGSwipeTableCell](https://github.com/MortimerGoro/MGSwipeTableCell)
 
@@ -7,7 +9,7 @@
 这篇文章不讲使用方法，作者在 README 里面说的很详细。初读了代码，想看看是怎么个实现思路（好奇宝宝），发现这个库写的很好，很强大（虽然代码格式不怎么规范，虽然有一个地方在方法名后面直接多打了分号，但是不影响，not care）
 
 
-## 实现思路
+**实现思路**
 
 ### 1、继承自 UITableViewCell
 
@@ -46,7 +48,6 @@ MGSwipeTableCell 内部滑动手势并没有使用 UISwipeGestureRecognizer，�
 ### 6、收起菜单后，显示 contentView 下的所有子 view
 
 
-
 ### 总结
 
 源码里面有很多细节，很值得仔细分析与学习。
@@ -56,4 +57,3 @@ MGSwipeTableCell 内部滑动手势并没有使用 UISwipeGestureRecognizer，�
 [看后面部分内容](http://www.aizhuanji.com/a/7w2dJdJW.html)
 
 一句话总结就是在你的 view 下面放一个含有左右要出现的菜单，然后上面放你实际的内容盖住，增加手势，左右滑动调整约束来展示。
-

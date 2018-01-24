@@ -1,5 +1,6 @@
-
-## apple如何加急审核
+---
+title: apple如何加急审核
+---
 
 登录 iTunesconnect，点击右上角的“?”图标，选择“联系我们”，然后依次选择 “App Review”、“App Store Review”、“Request Expedited Review”，注意：选择完要点击 “Request an Expedited App Review”，不要去点击 Done。
 

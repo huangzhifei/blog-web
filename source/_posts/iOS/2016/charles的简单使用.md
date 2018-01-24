@@ -1,4 +1,6 @@
-## charles的简单使用
+---
+title: charles的简单使用
+---
 
 [charles 官网](https://www.charlesproxy.com/documentation/getting-started/)
 
@@ -49,4 +51,3 @@
 这个功能直接看下面链接 [](http://www.infoq.com/cn/articles/network-packet-analysis-tool-charles)
 
 总结就是要让手机的网络和电脑的在一个路由下面，让电脑成为其代理。
-

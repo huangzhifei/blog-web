@@ -1,5 +1,6 @@
-
-## Masonry小知识
+---
+title: Masonry小知识
+---
 
 ### 介绍
 
@@ -52,7 +53,7 @@ UIView *sv = [UIView new];
 [sv mas_makeConstraints:^(MASConstraintMaker *make) {
 //将sv居中(很容易理解吧?)
     make.center.equalTo(ws.view);
-     
+
     //将size设置成(300,300)
     make.size.mas_equalTo(CGSizeMake(300, 300));
 }];
@@ -74,14 +75,14 @@ UIView *sv = [UIView new];
 
 2. MACRO 宏
 	equalTo 和 mas_equalTo 的区别在哪里呢? 其实 mas_equalTo 是一个 MACRO,他支持的类型除了了NSNumber之外，还支持CGPoint、CGSize、UIEdgeInsets。
-	
-	
+
+
 ### 布局UIScrollView
 
 参照文章[http://www.pixeldock.com/blog/uiscrollview-and-auto-layout/]()
 
 我们都知道UIScrollView是有点不一样的，他要先知道contentSize，但是了contentSize 又要依赖于他本身，看下面的代码我们如何实现这样一个自动布局
-	
+
 ```oc
 	UIScrollView *scrollView = [[UIScrollView alloc] init];
 	scrollView.backgroundColor = [UIColor whiteColor];
@@ -89,7 +90,7 @@ UIView *sv = [UIView new];
 	[scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
    	 	make.edges.equalTo(sv).with.insets(UIEdgeInsetsMake(5,5,5,5));
 	}];
-	
+
 	// 小技巧：给所有的subView加一个container，然后设置container的约束与scrollView的关系
 	UIView *containter = [UIView new];
 	[scrollView addSubview:container];
@@ -99,7 +100,7 @@ UIView *sv = [UIView new];
 			// 如果需要横向的滑动 就把height设为和scrollview相同
     		make.width.equalTo(scrollView);
 	}];
-	
+
 	int count = 10;
 	UIView *lastView = nil;
 	for ( int i = 1 ; i <= count ; ++i ) {
@@ -109,11 +110,11 @@ UIView *sv = [UIView new];
 	                                      saturation:( arc4random() % 128 / 256.0 ) + 0.5
 	                                      brightness:( arc4random() % 128 / 256.0 ) + 0.5
 	                                           alpha:1];
-	     
+
 	    [subv mas_makeConstraints:^(MASConstraintMaker *make) {
 	        make.left.and.right.equalTo(container);
 	        make.height.mas_equalTo(@(20*i));
-	         
+
 	        if ( lastView ) {
 	            make.top.mas_equalTo(lastView.mas_bottom);
 	        }
@@ -121,7 +122,7 @@ UIView *sv = [UIView new];
 	            make.top.mas_equalTo(container.mas_top);
 	        }
 	    }];
-	     
+
 	    lastView = subv;
 	}
 	[container mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -132,6 +133,5 @@ UIView *sv = [UIView new];
 这里的关键就在于container这个view起到了一个中间层的作用 能够自动的计算uiscrollView的contentSize
 
 ### 小结
-	
+
 	Masonry 是一个非常优秀的autolayout的库，他里面还有很多高级的玩法，大家有兴趣的可以去看他的demo。
-	

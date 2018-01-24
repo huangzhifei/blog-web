@@ -1,4 +1,6 @@
-## UITableViewCell左滑与右滑菜单
+---
+title: UITableViewCell左滑与右滑菜单
+---
 
 UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、标记等等，有一个很好用的第三方库[MGSwipeTableCell](https://github.com/MortimerGoro/MGSwipeTableCell)，可以帮助我们快速实现Cell的左滑和右滑，这个库有详细的使用说明，这里就不多说了。但是有些时候，我们不想只为了某一个界面就导入这么一个库，我们也可以使用系统自带实现一些简单的侧滑。
 
@@ -17,7 +19,7 @@ UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、�
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -25,7 +27,7 @@ UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、�
     return YES;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath 
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return @"删除";
 }
@@ -39,7 +41,7 @@ UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、�
 - (nullable NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewRowAction *cancle = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"取消拉黑" handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
-        
+
 		// do something ...
     }];
     cancle.backgroundColor = RGBCOLORV(0xdedede);
@@ -50,7 +52,7 @@ UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、�
 注意这里有一个坑！在iOS8上面，只实现这个方法并不能侧滑，还需要加上下面这个方法，什么都不用实现就可以，这估 这是系统的bug。
 
 ```
-/// fixbug: 在iOS8.3真机上面，不重写这个方法，就无法左滑 
+/// fixbug: 在iOS8.3真机上面，不重写这个方法，就无法左滑
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 }
@@ -85,4 +87,3 @@ for (UIView *sbv in self.subviews) {
 ***tip：UITableView 的编辑模式和这个还有点不一样。***
 
 这可以参照文章最开始出现那个库。
-

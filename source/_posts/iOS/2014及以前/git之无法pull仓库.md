@@ -1,4 +1,6 @@
-## git之无法pull仓库
+---
+title: git之无法pull仓库
+---
 
 git 无法 pull 仓库，报错 refusing to merge unrelated histories
 
@@ -11,4 +13,3 @@ git pull origin master --allow-unrelated-histories
 ```
 
 这样就把可以了，然后就可以正常 push & pull 了。
-
