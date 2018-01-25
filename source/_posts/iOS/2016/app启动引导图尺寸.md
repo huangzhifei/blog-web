@@ -1,5 +1,12 @@
 ---
 title: 移动端启动图尺寸
+
+date: 2016-05-10 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ## iOS

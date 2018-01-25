@@ -1,5 +1,12 @@
 ---
 title: UIView圆角和加边框方式总结
+
+date: 2017-02-15 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ### 最简单的

@@ -1,5 +1,12 @@
 ---
 title: 手势中cancelsTouchesInView属性
+
+date: 2017-08-16 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 UIGestureRecognizer 中一个属性，默认值为YES，使用场景：

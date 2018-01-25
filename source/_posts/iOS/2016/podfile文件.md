@@ -1,5 +1,12 @@
 ---
 title: podfile文件
+
+categories: cocoapod
+
+date: 2016-03-15 14:02:37
+
+tags: cocoapod
+
 ---
 
 ### 单target的podfile文件

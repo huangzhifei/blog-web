@@ -1,5 +1,12 @@
 ---
 title: StatusBar的故事
+
+date: 2017-08-15 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ### 隐藏与显示

@@ -1,5 +1,12 @@
 ---
 title: git之pull与fetch区别
+
+date: 2014-05-07 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 作者很懒，就留下了一句话

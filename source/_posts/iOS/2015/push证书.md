@@ -1,5 +1,11 @@
 ---
 title: push证书
+
+date: 2015-06-10 11:37:42
+
+tags: push
+
+categories: iOS技术
 ---
 
 可以参考百度的push sdk文档 [http://push.baidu.com/doc/ios/api]()

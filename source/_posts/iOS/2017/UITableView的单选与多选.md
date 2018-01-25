@@ -1,5 +1,12 @@
 ---
 title: UITableView的单选与多选
+
+date: 2017-04-15 14:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 #### 1、非编辑模式

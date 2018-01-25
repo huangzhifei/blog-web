@@ -1,5 +1,12 @@
 ---
 title: iOS触摸事件让人头大
+
+date: 2017-03-15 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 瞎总结：

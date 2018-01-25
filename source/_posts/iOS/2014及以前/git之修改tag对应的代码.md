@@ -1,5 +1,12 @@
 ---
 title: git之修改tag对应的代码
+
+date: 2014-02-16 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 如何取到 git 已经打好的 tag 所对应的代码了？

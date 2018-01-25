@@ -1,5 +1,12 @@
 ---
 title: 子线程RunLoop
+
+date: 2017-06-05 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 参考文章：

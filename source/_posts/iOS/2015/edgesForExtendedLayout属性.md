@@ -1,5 +1,12 @@
 ---
 title: edgesForExtendedLayout属性
+
+date: 2015-01-10 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ### 方法一

@@ -1,5 +1,12 @@
 ---
 title: App发布流程
+
+date: 2016-04-10 11:37:42
+
+tags: App store发布
+
+categories: App store审核与发布
+
 ---
 
 基于xcode 8

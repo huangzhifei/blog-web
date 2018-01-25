@@ -1,5 +1,12 @@
 ---
 title: MGSwipeTableCell实现原理简单分析
+
+date: 2017-10-15 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 先上链接地址 [MGSwipeTableCell](https://github.com/MortimerGoro/MGSwipeTableCell)

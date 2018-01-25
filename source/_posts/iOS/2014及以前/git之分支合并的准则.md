@@ -1,5 +1,12 @@
 ---
 title: git之分支合并的准则
+
+date: 2014-05-16 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 新开了分支 branch 去完成某个 feature，完成之后要 merge 到 master 分支上，此时我们应该怎么操作了？

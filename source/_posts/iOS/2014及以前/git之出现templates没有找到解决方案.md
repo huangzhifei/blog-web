@@ -1,5 +1,12 @@
 ---
 title: git之出现templates没有找到解决方案
+
+date: 2014-04-10 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 在 Mac 上用 SourceTree 克隆的时候, 偶尔出现了

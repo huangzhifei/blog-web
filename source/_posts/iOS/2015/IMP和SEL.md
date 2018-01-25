@@ -1,5 +1,12 @@
 ---
 title: IMP和SEL
+
+date: 2015-08-10 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 在 oc 中 Method 是含有至少两个参数 (id self, SEL selector) 的 C 函数，中 self 为对象， selecotr 表示方法的 selector，便于查找 IMP， 其实 oc 是做了一层 SEL 与 IMP 的映射。如果 Method 中定义了更多的参数，将会强制放到这两个参数后面，这个函数叫 IMP， 其定义如下

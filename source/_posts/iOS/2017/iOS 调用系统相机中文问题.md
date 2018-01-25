@@ -1,5 +1,12 @@
 ---
 title: iOS 调用系统相机中文问题-备忘
+
+date: 2017-05-15 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ### 方法一

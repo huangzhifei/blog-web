@@ -1,5 +1,12 @@
 ---
 title: XCode之dSYM文件
+
+date: 2015-04-10 11:37:42
+
+tags: XCode
+
+categories: iOS工具
+
 ---
 
 参考文章：bugly

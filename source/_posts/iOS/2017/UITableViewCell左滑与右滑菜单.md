@@ -1,5 +1,12 @@
 ---
 title: UITableViewCell左滑与右滑菜单
+
+date: 2017-02-16 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 UITableViewCell的侧滑可以很方便的进行一些操作，比如删除、标记等等，有一个很好用的第三方库[MGSwipeTableCell](https://github.com/MortimerGoro/MGSwipeTableCell)，可以帮助我们快速实现Cell的左滑和右滑，这个库有详细的使用说明，这里就不多说了。但是有些时候，我们不想只为了某一个界面就导入这么一个库，我们也可以使用系统自带实现一些简单的侧滑。

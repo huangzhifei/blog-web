@@ -1,5 +1,13 @@
 ---
+
 title: Xcode上的代码格式调整工具
+
+categories: iOS工具
+
+date: 2016-01-25 14:02:37
+
+tags: iOS工具
+
 ---
 
 ### 今天要说的主角就是 XcodeClangFormat（彻底退出Xcode）

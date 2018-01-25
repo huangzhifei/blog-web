@@ -1,5 +1,12 @@
 ---
 title: git之cherry-pick
+
+date: 2014-07-12 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 cherry-pick 可以选择某一个分支中的一个或多个commit来进行操作。

@@ -1,5 +1,12 @@
 ---
 title: 创建自定义bundle
+
+date: 2016-04-10 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 bundle 文件在运行的时候不会被编译，此文件最好是存放一些静态资源文件。

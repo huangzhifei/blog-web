@@ -1,5 +1,12 @@
 ---
 title: git之无法pull仓库
+
+date: 2014-04-21 11:37:42
+
+tags: git
+
+categories: git常用命令与技巧
+
 ---
 
 git 无法 pull 仓库，报错 refusing to merge unrelated histories

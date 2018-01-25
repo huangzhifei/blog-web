@@ -1,5 +1,12 @@
 ---
 title: UIStackView
+
+categories: iOS技术
+
+date: 2016-01-15 14:02:37
+
+tags: iOS
+
 ---
 
 参照文章 [http://www.jianshu.com/p/07c430fbde9e]()

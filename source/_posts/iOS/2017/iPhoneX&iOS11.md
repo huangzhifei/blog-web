@@ -1,5 +1,12 @@
 ---
 title: iPhone X 和 iOS 11 适配
+
+date: 2017-12-25 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 ### 1、缺少iPhone X的启动图
@@ -29,7 +36,7 @@ a、自定义backBarButtonItem
 	                                                                             style:UIBarButtonItemStylePlain
 	                                                                            target:nil
 	                                                                            action:nil];
-	
+
 	        UIImage *image = [UIImage imageNamed:@"ic_return"];
 	        UIImage *highlightedImage = [UIImage imageNamed:@"ic_return"];
 	        [backButtonItem setBackButtonBackgroundImage:[image resizableImageWithCapInsets:UIEdgeInsetsMake(0, image.size.width, 0, 0)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
@@ -78,7 +85,7 @@ b、自定义leftBarButtonItems
   ```
 
   主要是的起作用的代码是
-  
+
   ```oc
   if (@available(iOS 11.0, *)) {
         backBtn.contentEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0);

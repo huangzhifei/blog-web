@@ -1,5 +1,12 @@
 ---
 title: APNS地址
+
+date: 2016-04-10 11:37:42
+
+tags: iOS
+
+categories: iOS技术
+
 ---
 
 APNS 苹果推送服务器

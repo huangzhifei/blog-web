@@ -1,5 +1,12 @@
 ---
 title: cocoapod 发布自己的仓库
+
+date: 2015-11-10 11:37:42
+
+tags: cocoapod
+
+categories: cocoapod
+
 ---
 
 网上有一堆这样的教程，下面我只是总结几个关键步骤

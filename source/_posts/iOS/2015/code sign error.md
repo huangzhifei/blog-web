@@ -1,5 +1,12 @@
 ---
 title: code sign error
+
+date: 2015-04-10 11:37:42
+
+tags: XCode
+
+categories: iOS技术
+
 ---
 
 Command /usr/bin/codesign failed with exit code 1
