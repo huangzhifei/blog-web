@@ -1,7 +1,7 @@
 ---
 title: code sign error
 
-date: 2015-04-10 11:37:42
+date: 2015-03-10 11:37:42
 
 tags: XCode
 
