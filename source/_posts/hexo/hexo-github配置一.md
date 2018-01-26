@@ -75,3 +75,105 @@ npm install hexo-generator-sitemap@1 --save
 
 然后可以到 node_modules 目录下面看自己是不是已经安装了这些模块。
 
+## Hexo 部署
+
+执行如下命令创建所需要的文件
+
+```
+$ hexo init folder
+$ cd folder
+$ npm install
+```
+
+这样就新建完成了，完成后的目录如下
+
+	.
+	├── _config.yml     // 全局配置文件，可以在里面设置一些基本信息，一看就明白
+	├── package.json		// 应用程序的信息，基本上可以不用管
+	├── scaffolds			// 新建md文件时的模版，使用默认的就行，基本上也不用管
+	├── source	
+	|   ├── _drafts
+	|   └── _posts		// 我们的md源文件
+	└── themes			// 主题，自带一个主题
+	
+## Hexo 常用命令
+
+### 1、新建 md 文件
+
+	$ hexo new [layout] title (或者 hexo n title)
+	
+新建一篇文章，如果没有设置 layout 的话，就会使用默认的，注意如果文件名中含有空格，请用引号括起来。
+
+### 2、生成静态文件
+
+	$ hexo generate (或者 hexo g)
+
+### 3、本地调试查看
+
+生成完静态文件后，我们可以本地先查看一下样式是否正确
+
+	$ hexo server (或 hexo s)
+
+启动本地服务器，默认情况下访问网址：http://localhost:4000/
+
+### 4、部署到远端
+	
+	$ hexo deploy (或 hexo d)
+
+部署之前记得先生成静态文件。
+
+### 5、清除缓存
+
+	$ hexo clean
+
+清除缓存文件 (db.json) 和已生成的静态文件 (public)。
+
+在某些情况（尤其是更换主题后），如果发现您对站点的更改无论如何也不生效，您可能需要运行该命令。
+
+**ps：远端的网站很多时候可能不会立即生效，可以等等或多刷新刷新。**
+
+### 6、显示 hexo 版本
+
+	 $ hexo version (或 hexo v)
+	 
+显示当前安装及使用的 hexo 的版本。
+
+
+## hexo 与 github pages 的配置
+
+### 1、github 账号及配置
+
+在 github 上创建一个仓库，仓库名字必须为 youraccount.github.io 比如 huangzhifei.github.io
+
+### 2、_config.yml 文件的配置
+
+在 _config.yml 文件中翻到最下面，修改如下：
+
+	# Deployment
+	## Docs: https://hexo.io/docs/deployment.html
+	deploy:
+  		type: git
+  		repo: https://github.com/huangzhifei/huangzhifei.github.io.git
+  		branch: master
+  
+注意冒号与后面内容有空格，branch 只能填 master 分支
+
+这要就和 github pages 关联上了，然后执行以下命令去看看是否正确关联成功：
+
+	$ hexo clean
+	$ hexo g
+	$ hexo d
+
+至此，个人博客就搭建成功了，访问网址为 youraccount.github.io 如：huangzhifei.github.io
+
+注意：访问出现404，可能会有延迟，所以可以先等等。
+
+
+## hexo 与 github pages 的多端同步与管理
+
+仔细看 hexo 生成的目录，里面会有一个隐藏文件夹 .deloy_git ，看名字就知道这是生成静态文件后，会上传到远端去部署的内容，我们发现并没有源文件（md文件，也就是source/_posts/*）这样我们在其他地方想更改源文件去重新生成新的内容就很蛋疼了。
+
+所以我们最好在 github 上面在创建另一个仓库，然后和这个本地的关联起来，把所有的源文件上传到 github就好了，在其他地方 clone 下来使用，不过还是要配置相应的 hexo 环境。
+
+
+
