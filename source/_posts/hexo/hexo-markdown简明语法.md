@@ -10,6 +10,10 @@ categories: hexo配置
 
 ---
 
+## hexo.io
+
+[https://hexo.io/zh-cn]() 这是 hexo 中文官网
+
 ## 内容目录
 
 如果在段落中填写 toc: ture 将会显示全文内容的目录结构
