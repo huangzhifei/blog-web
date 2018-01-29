@@ -16,7 +16,7 @@ categories: hexo配置
 
 ### 1、添加 CNAME 文件
 
-在根目录下新建 CNAME 文件，注意不要有任何后缀。
+在根目录下的Source目录新建 CNAME 文件，注意不要有任何后缀。(一定要在此目录下面创建，这样部署后会到远端生效)
 
 然后在里面添加你的域名信息，如下图：
 
@@ -25,13 +25,7 @@ categories: hexo配置
 
 保存之后，重新部署到 github pages 上面。
 
-### 2、给 github 项目添加自定义域名
-
-在项目的 Setting 中的 Custom domain 添加自己的域名：
-
-![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/customDomain.png)
-
-### 3、给域名添加解析记录
+### 2、给域名添加解析记录
 
 #### 1、ping 你自己的 yourname.github.io 获取 ip 地址：
 
@@ -43,7 +37,7 @@ categories: hexo配置
 
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/aliyunDNS.png)
 
-### 4、配置完成
+### 3、配置完成
 
 现在可以去用你的域名访问原来的 github pages 了。
 
