@@ -108,7 +108,18 @@ npm install
 
 在手动创建一个 index.ios.js 文件，作为 RN 的入口。
 
-### 3、原生添加 RN 入口绑定
+### 3、启动服务
+
+执行以下命令来启动 RN 本地的服务
+
+```
+react-native start
+```
+
+这样原生 iOS 程序就可以调用 js 文件了。
+
+
+### 4、原生添加 RN 入口绑定
 
 我们可以app启动时候去添加如下代码来绑定
 
@@ -164,4 +175,18 @@ AppRegistry.registerComponent('RNPhotoTest', () => photoTest);
 ```
 
 这里我们注册了 6 个组件。
+
+## IDE
+
+推荐：
+
+webstorm
+
+atom
+
+sublime text
+
+visual studio code
+
+喜欢用哪个就用哪个，我反正都安装了，最后用了 visual studio code（VSCode）也没有用明白~
 
