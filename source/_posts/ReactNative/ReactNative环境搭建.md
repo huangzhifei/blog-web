@@ -190,3 +190,9 @@ visual studio code
 
 喜欢用哪个就用哪个，我反正都安装了，最后用了 visual studio code（VSCode）也没有用明白~
 
+## RN 技术依赖
+
+个人总结：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RNTechDepend.png)
+
