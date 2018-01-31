@@ -15,10 +15,13 @@ categories: 源码
 
 收录了日常使用的轮子与个人理解心得 [https://github.com/huangzhifei/UtilityKits]()
 
+## ECLinearActivityIndicator
+
+一个 iPhone X 的类系统网络加载动画，一行代码搞定，零耦合。[https://github.com/huangzhifei/ECLinearActivityIndicator]()
+
 ## ColorPlay
 
 一个 iOS 的颜色游戏 [https://github.com/huangzhifei/ColorPlay]()
-
 
 ## HZFGCDTimer
 
