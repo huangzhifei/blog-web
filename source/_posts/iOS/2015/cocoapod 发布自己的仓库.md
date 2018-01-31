@@ -41,7 +41,7 @@ pod spec create 名字
 ```
 pod trunk push Project_name.podspec --allow-warnings --verbose
 ```
-这一步很关键，他会检查你之前生成的podspec文件有没有出错，他会去对应的tag下面拉取代码编译，如果成功会返回很明显的成功信息
+这一步很关键，他会检查你之前生成的podspec文件有没有出错，他会去对应的tag下面拉取代码编译，如果成功会返回很明显的成功信息，以后每次更新代码，打好tag，修改好对应的 podspec 文件，都使用此命令来推送到 pod 仓库来更新。
 
 ### 3、查找发布的pod库
 
