@@ -162,7 +162,7 @@ react-native start
 	</dict>
 ```
 如下图:
-
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/localhost.png)
 
 ### 4、原生添加 RN 入口绑定
 
