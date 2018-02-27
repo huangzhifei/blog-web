@@ -100,13 +100,41 @@ react-native run-ios
 
 ### 2、oc 工程内嵌 RN
 
-正常创建 oc 工程，在 .xcworkspace 或 xcodeproj 同级下创建文件夹，假设我们叫 RNComponent ，然后进入 RNComponent，我们先拷贝一个 package.json 文件进来（可以在其他目录创建一个纯RN工程后，拷贝其package.json文件），然后执行
+1、正常创建 oc 工程，在 .xcworkspace 同级下创建文件夹，假设我们叫 RNComponent ，然后进入 RNComponent，我们先拷贝一个 package.json 文件进来（可以在其他目录创建一个纯RN工程后，拷贝其package.json文件），然后执行
 
 ```
 npm install
 ```
 
 在手动创建一个 index.ios.js 文件，作为 RN 的入口。
+
+2、创建一个 podfile 文件，里面以 subspec 的形式填写你所需要集成的 React Native 的组件，如下：
+
+```
+platform :ios, '8.0'
+
+target 'RNNative' do
+
+#for react native
+#如果你的RN版本 >= 0.42.0，请加入下面这行
+	pod 'Yoga',  :path => './RNComponent/node_modules/react-native/ReactCommon/yoga'
+    pod 'React', :path => './RNComponent/node_modules/react-native/', :subspecs => [
+ 	'Core',
+  	'ART',
+  	'RCTActionSheet',
+  	'RCTAdSupport',
+  	'RCTGeolocation',
+  	'RCTImage',
+  	'RCTNetwork',
+  	'RCTPushNotification',
+  	'RCTSettings',
+  	'RCTText',
+  	'RCTVibration',
+  	'RCTWebSocket',
+  	'RCTLinkingIOS',
+    'DevSupport']
+end
+```
 
 ### 3、启动服务
 
@@ -117,6 +145,23 @@ react-native start
 ```
 
 这样原生 iOS 程序就可以调用 js 文件了。
+
+注意：当 RN 的本地服务运行起来后，我们通过 XCode 来运行程序时可能会提示无法链接到 RN 的服务，这是因为我们本地服务是以 http 的方式启动的，由于 ATS 的限制让我们必须使用 https ，所以我们需要在 info.plist 里面增加 http 的允许或者我们增加 Exception Domains 。
+
+```
+<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+```
+如下图:
 
 
 ### 4、原生添加 RN 入口绑定
