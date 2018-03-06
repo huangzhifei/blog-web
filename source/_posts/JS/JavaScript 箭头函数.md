@@ -65,7 +65,7 @@ params => statements
 
 ## this 的绑定
 
-和一般的函数不同，箭头函数不会绑定this。 或则说箭头函数不会改变 this 本来的绑定
+在箭头函数出现之前，每个新定义的函数都有它自己的 this值，和一般的函数不同，箭头函数不会绑定this。 或则说箭头函数不会改变 this 本来的绑定
 
 ```
 function Counter() {
