@@ -3,7 +3,7 @@ title: iOS 开发是否要采用 React Native ?
 
 date: 2017-01-25 10:37:42
 
-tags: React Native
+tags: RN
 
 categories: React Native
 
