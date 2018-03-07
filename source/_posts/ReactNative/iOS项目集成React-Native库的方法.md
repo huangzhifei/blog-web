@@ -155,9 +155,32 @@ pod 'React', '0.44.3', :subspecs => [
 # 方法二
 
 
+1、方法二相对于方法一那就简单暴力多了，只需要一个开发者安装了环境后，设置好 podfile 里面的依赖
 
+```
+#for react native
+#如果你的RN版本 >= 0.42.0，请加入下面这行
+pod 'Yoga',  :path => './node_modules/react-native/ReactCommon/yoga'
+pod 'React', :path => './node_modules/react-native/', :subspecs => [
+'Core',
+'ART',
+'RCTActionSheet',
+'RCTAdSupport',
+'RCTGeolocation',
+'RCTImage',
+'RCTNetwork',
+'RCTPushNotification',
+'RCTSettings',
+'RCTText',
+'RCTVibration',
+'RCTWebSocket',
+'RCTLinkingIOS',
+'DevSupport']
+```
 
+注意：关注一下里面 node_modules/ 的路径。
 
+2、把整个 node_modules 文件也上传到 git，方便其他人使用及自动打包（毕竟打包机没有安装环境）。
 
 
 
