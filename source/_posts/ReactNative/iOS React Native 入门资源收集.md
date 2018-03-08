@@ -18,7 +18,9 @@ categories: React Native
 
 [React-JSX入门教程](https://hulufei.gitbooks.io/react-tutorial/content/jsx-in-depth.html)
 
-[一个简单的实战项目](https://knightsj.github.io/2017/08/30/从一个实战项目来看一下React%20Native开发的几个关键技术点/)
+[一个简单的实战项目A版本](https://knightsj.github.io/2017/08/30/从一个实战项目来看一下React%20Native开发的几个关键技术点/)
+
+[一个简单的实战项目B版本](http://flyoceanfish.top/2017/12/13/React%20Native之GitHub%20App项目总结/)
 
 [React Native 优秀开源项目大全](http://www.marno.cn)
 
