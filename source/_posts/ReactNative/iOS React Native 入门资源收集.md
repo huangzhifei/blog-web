@@ -35,3 +35,5 @@ categories: React Native
 [React Native 英文](http://facebook.github.io/react-native/)
 
 [React Native Express](http://www.reactnativeexpress.com)
+
+[React Native、Redux 踩坑和心得](https://blog.codeest.moe/2017/06/27/web-react-native-redux/)
