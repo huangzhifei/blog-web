@@ -53,3 +53,8 @@ categories: React Native
 [protobufjs github地址](https://github.com/dcodeIO/protobuf.js/)
 
 [React Native 的 TCP Client](https://github.com/tengontheway/ReactNativeTcpProtocolBufClient)
+
+## React Native 与 iOS 混合开发数据交互
+
+[React Native混合开发(iOS)下的数据交互](https://www.jianshu.com/p/6f7558b155c8)
+
