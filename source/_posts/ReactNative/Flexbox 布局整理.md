@@ -73,3 +73,19 @@ alignItems enum('flex-start', 'flex-end', 'center', 'stretch')
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/alignItem.jpg)
 
 
+### 子视图属性 alignSelf
+
+alignSelf 属性定义了 flex 容器内被选中项目的对齐方式，注意：alignSelf 属性可重写灵活容器的 alignItems 属性
+
+alignSelf enum('auto', 'flex-start', 'flex-end', 'center', 'stretch')
+
+* auto(default) 元素继承了它的父容器的 align-items 属性。如果没有父容器则为 "stretch"。
+ 
+* stretch	元素被拉伸以适应容器。
+ 
+* center	元素位于容器的中心。
+ 
+* flex-start	元素位于容器的开头。
+ 
+* flex-end	元素位于容器的结尾。
+
