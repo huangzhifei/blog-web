@@ -54,6 +54,8 @@ var {
 ```
 传递所有属性，如果属性里面有className，会被后面的覆盖，没有就不用管。
 
+
+
 ```
 <CustomView className="Test" {...this.props} >
     …
