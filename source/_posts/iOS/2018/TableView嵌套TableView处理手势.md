@@ -181,7 +181,7 @@ for (int i=0; i<tabConfigArray.count; i++) {
 }
 ```
 
-这样就处理完了嵌套 TableView 的手势问题及滑动时机，完整代码请看 Demo
+这样就处理完了嵌套 TableView 的手势问题及滑动时机，完整代码请看 [Demo](https://github.com/huangzhifei/UtilityKits/tree/master/UtilityKits/TableNestTable-45)
 
 
 
