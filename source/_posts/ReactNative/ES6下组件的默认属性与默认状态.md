@@ -42,6 +42,9 @@ var Video = React.createClass({
 
 ```
 //ES6
+
+import PropTypes from 'prop-types';
+
 class Video extends React.Component {
     static defaultProps = {
         autoPlay: false,
@@ -49,10 +52,10 @@ class Video extends React.Component {
     };  // 注意这里有分号
     
     static propTypes = {
-        autoPlay: React.PropTypes.bool.isRequired,
-        maxLoops: React.PropTypes.number.isRequired,
-        posterFrameSrc: React.PropTypes.string.isRequired,
-        videoSrc: React.PropTypes.string.isRequired,
+        autoPlay: PropTypes.bool.isRequired,
+        maxLoops: PropTypes.number.isRequired,
+        posterFrameSrc: PropTypes.string.isRequired,
+        videoSrc: PropTypes.string.isRequired,
     };  // 注意这里有分号
     
     render() {
@@ -62,6 +65,31 @@ class Video extends React.Component {
     } // 注意这里既没有分号也没有逗号
 }
 ```
+
+注意：React.PropTypes 在高版本里面已经被移动到 prop-types 这个 lib 里面了，以后我们使用的时候需要单独导入一下。
+
+常用的有以下：
+
+```
+# 数组类型
+PropTypes.array
+
+# 布尔类型
+PropTypes.bool
+
+# 函数类型
+PropTypes.func
+
+# 数值类型
+PropTypes.number
+
+# 对象类型
+PropTypes.object
+
+# 字符串类型
+PropTypes.string
+```
+
 
 ### 状态(state)
 
