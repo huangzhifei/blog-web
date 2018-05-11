@@ -164,7 +164,29 @@ react-native start
 如下图:
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/localhost.png)
 
-### 4、原生添加 RN 入口绑定
+### 4、服务更新与清理
+
+React Native 更新非常快，我们应该时刻保持包管理的更新，之有使用 brew 来管理包，所以我们尽量让 brew 处于最新状态：
+
+```
+brew update
+brew upgrade
+```
+
+如果升级了 React Native，那么推荐升级一下 node
+
+```
+brew upgrade node
+```
+
+当依赖包出现部问题或混乱后，很多时间我们需要清理已经安装的 npm 包， 重新 install 就好了
+
+```
+rm -rm node_modules
+npm install
+```
+
+### 5、原生添加 RN 入口绑定
 
 我们可以app启动时候去添加如下代码来绑定
 
