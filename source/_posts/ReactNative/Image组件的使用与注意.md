@@ -114,3 +114,61 @@ const styles = StyleSheet.create({
 
 ## 网络图占位
 
+我们先来了解一下 Image 组件渲染绘制图像时的原理，如果当前 Image 上已经有一张绘制好的图像，在重新加载另一张新图像时，如果新图像还没有完全加载绘制好，还是会先显示之前的图像。
+
+我们首先展示占位图，然后设置一个 state 值，当网络数据返回后更新些值或者网络图片加载完成，就会去刷新，这个时候在根据这个值来判断是否去加载url的图片（有人担心我们在 onLoadEnd 或 onError 里面改变state，会不会出现死循环？不会的，RN做了优化了）
+看如下代码：
+
+```
+export default class ImageLoad extends Component {
+
+    constructor (props) {
+        super (props);
+        this.state = {
+            showDefault: true,
+        }
+    }
+
+    static defaultProps = {
+        placeHolder: null,
+        source: null,
+        resizeMode: "cover"
+    };
+
+    static PropTypes = {
+        placeHolder: PropTypes.object,
+        source: PropTypes.string.isRequired,
+        resizeMode: PropTypes.string
+    };
+
+    render() {
+        var image = this.props.placeHolder;
+        if (!this.props.placeHolder) {
+            image = this.props.source;
+        } else {
+            image = this.state.showDefault ? this.props.placeHolder : this.props.source;
+        }
+        return (
+            <Image style = { this.props.style } 
+                    source = { image }
+                    onLoadEnd = { () => {
+                        if (this.props.placeHolder) {
+                            // setTimeout(() => {
+                            //     this.setState({
+                            //         showDefault: false
+                            //     })
+                            // }, 10);
+                            this.setState({
+                                showDefault: false
+                            })
+                        } 
+                    }
+                }
+                resizeMode = { this.props.resizeMode }>
+            </Image>
+        );
+    }
+}
+```
+
+目前此组件还比较简单，可以添加一个加载提示，在加个动画让占位图和网络图切换的流畅点。
