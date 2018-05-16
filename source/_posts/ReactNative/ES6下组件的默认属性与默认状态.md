@@ -71,6 +71,12 @@ class Video extends React.Component {
 常用的有以下：
 
 ```
+# 为任何类型
+PropTypes.any
+
+# 为 React 元素
+PropTypes.element
+
 # 数组类型
 PropTypes.array
 
@@ -88,8 +94,26 @@ PropTypes.object
 
 # 字符串类型
 PropTypes.string
-```
 
+# 为可渲染的节点
+PropTypes.node
+
+# 为几个特定的值
+PropTypes.oneOf(['value1', 'value2'])
+
+# 为某个指定类的实例
+PropTypes.instanceOf(NameOfClass)
+
+# 为指定类型的数组
+PropTypes.arrayOf(PropTypes.string)
+
+# 为几个指定的类型中的一个
+PropTypes.oneOfType([
+	PropTypes.object,
+	PropTypes.string
+])
+
+```
 
 ### 状态(state)
 
