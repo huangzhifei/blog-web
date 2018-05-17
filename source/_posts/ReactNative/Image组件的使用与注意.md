@@ -171,4 +171,15 @@ export default class ImageLoad extends Component {
 }
 ```
 
+使用方式：
+
+```
+<View style = {styles.containerStyle}>
+    <ImageLoad style = {styles.imageStyle}
+        placeHolder = {require("../Res/images/empty-image.png")}
+        source = {{uri: 'http://www.baidu.com/image5715b22a749adphpyPs8k7.png', width: 220, height: 100, cache:'force-cache' }}>
+    </ImageLoad>
+</View>
+```
+
 目前此组件还比较简单，可以添加一个加载提示，在加个动画让占位图和网络图切换的流畅点。
