@@ -56,10 +56,19 @@ export default class BaseButton extends Component {
 
         this.props.onPress && this.props.onPress();
     }
+    
+    
+    // render () {
+    //     return (
+    //         <View>
+              
+    //         </View>
+    //     );
+    // }
 }
 ```
 
-这个基类里面定义一些通用方法和属性，如：点击、文本颜色等，然后我们定义一个 NormalButton 来继承于他
+这个基类里面定义一些通用方法和属性，如：点击、文本颜色等，然后我们定义一个 NormalButton 来继承于他，看到下面 render 方法被注释掉，写不写这个方法无所谓的，因为如果子类继承后，就会使用自己的render，不会调用父类的。
 
 2、创建 NormalButton.js
 
