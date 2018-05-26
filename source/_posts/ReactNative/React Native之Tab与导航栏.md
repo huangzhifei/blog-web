@@ -12,6 +12,8 @@ categories: React Native
 
 我们使用 react-navigation 这个目前很流行的三方库，下面我们介绍他提供的 TabNavigator + StackNavigator 来实现界面跳转、Tab的切换。
 
+参照文章：[https://www.jianshu.com/p/2f575cc35780]()
+
 ## 安装
 
 通过命令安装：
@@ -438,7 +440,26 @@ none：无动画，导航栏都隐藏了
 
 #### 9、headerTitleStyle
 
-设置导航栏文字样式
+设置导航栏文字样式，安卓上如果要设置文字居中，只要添加 alignSelf: 'center' 就可以了，如果左边有返回箭头导致文字还是没有居中的问题，最简单的解决思路就是在右边也放置一个空的View占位就行，代码如下：
+
+```
+static navigationOptions = {
+	title: 'xxx',
+	header: {
+		right: (
+			<View style = {{width: 40}}>
+			</View>
+		),
+	}
+}
+```
+
+不过在最新的版本中，可以通过如下代码来让其居中了
+
+```
+flex:1, 
+textAlign: 'center',
+```
 
 #### 10、headerBackTitleStyle
 
@@ -483,12 +504,140 @@ this.props.navigation.state.params.user
 this.props.navigation.state.params.name
 ```
 
+## 自定义导航栏返回按钮
+
+项目中基本是没有可能用自带的那个导航栏返回按钮的，因为他永远是蓝色的，我们可以使用下面的属性来更改：
+
+### 通过更改属性来自定义
+
+1、更改返回按钮颜色（那个左箭头）
+
+```
+navigationOptions: ({navigation}) => ({
+    headerTintColor: 'white',
+}),
+```
+通过 headerTintColor 来更改
+
+2、很多不想显示左边返回的文字
+
+```
+navigationOptions: ({navigation}) => ({
+    headerBackTitleStyle: {
+        color: 'transparent',
+    },
+}),
+```
+我们通过更改 headerBackTitleStyle 的样式，颜色设置成透明就好了
+
+### 通过添加控件来自定义
+
+我们添加自己的控件和图片来自定义
+
+```
+const StackOptions = ({navigation}) => {
+    console.log(navigation);
+    let {state,goBack} = navigation;
+    
+    // 用来判断是否隐藏或显示header
+    const visible= state.params.isVisible;
+    let header;
+    if (visible === true){
+        header = null;
+    }
+    const headerStyle = {backgroundColor:'#4ECBFC'};
+    const headerTitle = state.params.title;
+    const headerTitleStyle = {fontSize:FONT_SIZE(20),color:'white',fontWeight:'500'}
+    const headerBackTitle = false;
+    const headerLeft = (
+        <Button
+            isCustom={true}
+            customView={
+                            <Icon
+                                name='ios-arrow-back'
+                                size={30}
+                                color='white'
+                                style={{marginLeft:13}}
+                            />
+                        }
+            onPress={()=>{goBack()}}
+        />
+    );
+    return {headerStyle,headerTitle,headerTitleStyle,headerBackTitle,headerLeft,header}
+};
+
+```
+
+然后在下面的地方调用一下就可以自定义导航栏返回按钮了
+
+```
+const MyApp = StackNavigator({
+    MyTab: {
+        screen: MyTab,
+    },
+    Detail: {
+        screen: Detail,
+        navigationOptions: ({navigation}) => StackOptions({navigation})
+    },
+)};
+
+```
+
+## 自定义Tabbar
+
+Tabbar在选中状态时可不可以设置其他图标，官方文档里面 tabBarIcon 除了了 tintColor 还有另外一个属性，用来判断选中状态的 focused
+
+```
+focused ?
+<Image
+    source={require('../Res/images/ic_forbag_normal@2x.png')}
+    style={[{tintColor: tintColor}, styles.icon]}
+/>) :
+<Image
+    source={require('../Res/images/ic_forbag_press@2x.png')}
+    style={[{tintColor: tintColor}, styles.icon]}
+/>)
+```
+通过判断 focused, 选中状态下使用 A 图片，未选中使用 B 图片。
+
+封装一下：
+
+```
+export const TabOptions = (tabBarTitle,normalImage,selectedImage,navTitle) => {
+    // console.log(navigation);
+    const tabBarLabel = tabBarTitle;
+    console.log(navTitle);
+    const tabBarIcon = (({tintColor,focused})=> {
+        return(
+            focused
+                ?
+                <Image
+                    source={{uri : normalImage}}
+                    style={[TabBarIcon, {tintColor: tintColor}]}
+                />
+                :
+                <Image
+                    source={{uri : selectedImage}}
+                    style={[TabBarIcon, {tintColor: tintColor}]}
+                />
+        )
+    });
+    const headerTitle = navTitle;
+    const headerTitleStyle = {fontSize:FONT_SIZE(20),color:'white'};
+    // header的style
+    const headerStyle = {backgroundColor:'#4ECBFC'};
+    return {tabBarLabel,tabBarIcon,headerTitle,headerTitleStyle,headerStyle};
+};
+
+```
+
 ## 总结
 
 我们发现导航栏要跳转的页面，都需要提前注册好，万一我们想动态跳转怎么办?
 
 我也不知道，还在研究中~~~~~~~~
 
+此库提供的功能很多、很强大，上面也只是列举了一部分，还有好大一部分需要研究。
 
 ***待更新......***
 
