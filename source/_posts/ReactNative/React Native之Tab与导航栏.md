@@ -349,9 +349,23 @@ AppRegistry.registerComponent('RNBaseModule', () => AppIndex);
 
 配置一些基本属性
 
-#### 5、paths
+#### 5、path
 
-据说是类似于 deep link 的功能，目前尝试没有成功过
+类似于 deep link 的功能，对于 iOS 这边需要如下设置
+
+1、在 Xcode 中设置相应的 schemes，即在 Info 下的 URL Types 里面添加一个 URL Schemes 名字，我们假定叫 Demo。
+
+2、在 AppDelegate 里面添加如下代码
+
+```
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [RCTLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+}
+```
+
+3、在 JS 代码的 path 里面设置跳转唯一路径，例如：Test: {screen: Test, path: 'app/Test'};
+
+这样设置完成后，就可以直接在手机浏览器访问 Demo://app/Test 就能打开 App，并进入到 Test 页面。
 
 #### 6、mode
 
