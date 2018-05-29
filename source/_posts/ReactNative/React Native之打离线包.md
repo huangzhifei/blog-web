@@ -91,4 +91,4 @@ jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"bundle/index.ios" withE
 
 **4、打包命令中的路径(文件夹一定要存在)。所以在我们运行打离线包命令之前要手动创建bundle目录**
 
-5、必须用 Create folder references 的方式引入图片的 bundle ，否则引用不到里面的图片。
+**5、必须用 Create folder references 的方式引入图片的 bundle ，否则引用不到里面的图片，也就是说添加到项目下的文件必须是蓝色的**
