@@ -32,11 +32,13 @@ categories: React Native
 
 ```
 
+--entry-file 的入口 index.ios.js 在高版本0.48之后已经统一变成 index.js 了，所以命令要改一下。
+
 打包命令如下：
 
 ```
 
-react-native bundle --entry-file index.ios.js --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle
+react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle
 
 ```
 
@@ -48,7 +50,7 @@ package.json 文件里面
 "scripts": {
 		"start": "node node_modules/react-native/local-cli/cli.js start",
 		"test": "jest",
-		"bundle-ios": "node node_modules/react-native/local-cli/cli.js bundle --entry-file index.ios.js  --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle"
+		"bundle-ios": "node node_modules/react-native/local-cli/cli.js bundle --entry-file index.js  --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle"
 	},
 ```
 
@@ -87,6 +89,6 @@ jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"bundle/index.ios" withE
 
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RN-Re.png)
 
-4、打包命令中的路径(文件夹一定要存在)。
+**4、打包命令中的路径(文件夹一定要存在)。所以在我们运行打离线包命令之前要手动创建bundle目录**
 
 5、必须用 Create folder references 的方式引入图片的 bundle ，否则引用不到里面的图片。
