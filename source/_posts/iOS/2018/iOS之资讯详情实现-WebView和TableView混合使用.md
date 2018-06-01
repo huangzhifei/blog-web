@@ -29,7 +29,7 @@ categories: iOS技术
 
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Netease.jpeg)
 
-## 2、今日头条
+### 2、今日头条
 
 今日头条新闻详情页最外层是 ScrollView，WebView 和 ThemedView（里面包含 TableView）是 ScrollView 同级 SubView。
 
@@ -53,7 +53,7 @@ categories: iOS技术
 3、ScrollView 在滚动过程中，WebView 和 TableView 的位置也是跟着改变的，这样就能保证 WebView 和 TableView 一直保持在可视的位置
 
 
-### 简书
+### 3、简书
 
 在[《UIWebView与UITableView的嵌套方案》](https://www.jianshu.com/p/42858f95ab43)一文中，作者是这样描述的：
 
@@ -66,13 +66,13 @@ webView.scrollView 的内容尺寸变化后，不断调整 tableView 的位置�
 
 简书是将 TableView 添加到 WebView 的 ScrollView 上，然后通过 UIPanGestureRecognizer 和 UIDynamicAnimator 模拟滚动产生偏移量来驱动 TableView 滑动。但是需要添加空白 div，预留 TableView 的位置，需要控制的逻辑比较复杂、麻烦，作者自己也说了。
 
-### 腾讯新闻
+### 4、腾讯新闻
 
 腾讯新闻的实现方案和今日头条的差不多，只是 ScrollView 下比今日头条添加了更多的 SubView，当然如果理清这个方案的基本思路，就不算很复杂。
 
 ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/tx.png)
 
-### 总结
+## 总结
 
 看了几款主流新闻资讯客户端资讯页的实现方案，从业务需求上来说，今日头条和腾讯新闻的实现方案是最为灵活的。
 
