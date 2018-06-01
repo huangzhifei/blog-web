@@ -37,11 +37,11 @@ categories: iOS技术
 
 查看 WebView 的布局属性，发现 WebView 并没有被撑开，但是 Y 的坐标是一直在发生变化
 
-![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/toutiao1.jpeg)
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/toutiao1.png)
 
 查看ThemedView的布局属性，发现其Y坐标是也是发生变化的，ThemedView正好位于WebView的下方。
 
-![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/toutiao2.jpeg)
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/toutiao2.png)
 
 
 通过以上分析基本可以推测出头条的解决方案：
@@ -58,7 +58,10 @@ categories: iOS技术
 在[《UIWebView与UITableView的嵌套方案》](https://www.jianshu.com/p/42858f95ab43)一文中，作者是这样描述的：
 
 ```
-将 webView 作为主体，其加载的 HTML 最后留一个空白 div，用于确定 tableView 的位置。tableView 加到 webView.scrollView 上，在监听到 webView.scrollView 的内容尺寸变化后，不断调整 tableView 的位置对应于该空白 div 的位置，同时将该 div 的尺寸设置为 tableView 的尺寸。
+
+将 webView 作为主体，其加载的 HTML 最后留一个空白 div，用于确定 tableView 的位置。tableView 加到 webView.scrollView 上，在监听到 
+webView.scrollView 的内容尺寸变化后，不断调整 tableView 的位置对应于该空白 div 的位置，同时将该 div 的尺寸设置为 tableView 的尺寸。
+
 ```
 
 简书是将 TableView 添加到 WebView 的 ScrollView 上，然后通过 UIPanGestureRecognizer 和 UIDynamicAnimator 模拟滚动产生偏移量来驱动 TableView 滑动。但是需要添加空白 div，预留 TableView 的位置，需要控制的逻辑比较复杂、麻烦，作者自己也说了。
@@ -77,7 +80,7 @@ categories: iOS技术
 
 其实大概的方法在上面已经分析过，现在通过数学的方法精确的说明一下。在我们资讯详情页中，使用WebView渲染网页内容，使用TableView渲染“相关推荐”和“资讯评论”。最外层是一个ScrollView，WebView和TableView平铺在这个ScrollView中。
 
-![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/web1.png)
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/webI.png)
 
 ### ScrollView 的 ContentSize
 
