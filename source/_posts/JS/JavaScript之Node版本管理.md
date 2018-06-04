@@ -50,6 +50,29 @@ npm -g install n
  n use 7.6.0 index.js
  ```
  
+ ## npm 常用命令
+ 
+ 下面补充几条 npm 常用命令
+ 
+ ```
+ npm -v  显示版本
+ 
+ npm install express 安装 express 模块
+ 
+ npm install -g express 全局安装 express 模块
+ 
+ npm list  列出已安装的模块
+ 
+ npm show express 显示模块详情
+ 
+ npm update express 升级当前目录下项目的所有模块
+ 
+ npm update -g express 升级全局安装的 express 模块
+ 
+ npm uninstall express 删掉指定的模块
+ 
+ ```
+ 
  ## 总结
  
  更多的用法建议直接去 n 的官方 github 下面去学习。
