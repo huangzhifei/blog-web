@@ -32,13 +32,13 @@ categories: React Native
 
 ```
 
---entry-file 的入口 index.ios.js 在高版本0.48之后已经统一变成 index.js 了，所以命令要改一下。
+***--entry-file 的入口 index.ios.js 在高版本0.48之后已经统一变成 index.js 了，所以命令要改一下。***
 
 打包命令如下：
 
 ```
 
-react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle
+react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ./ios/bundle/index.jsbundle --assets-dest ./ios/bundle
 
 ```
 
@@ -50,7 +50,7 @@ package.json 文件里面
 "scripts": {
 		"start": "node node_modules/react-native/local-cli/cli.js start",
 		"test": "jest",
-		"bundle-ios": "node node_modules/react-native/local-cli/cli.js bundle --entry-file index.js  --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle"
+		"bundle-ios": "node node_modules/react-native/local-cli/cli.js bundle --entry-file index.js  --platform ios --dev false --bundle-output ./ios/bundle/index.jsbundle --assets-dest ./ios/bundle"
 	},
 ```
 
