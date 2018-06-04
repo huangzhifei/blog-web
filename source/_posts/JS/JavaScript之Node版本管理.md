@@ -37,4 +37,21 @@ npm -g install n
  
  安装完成多个版本后，直接输入不带参数的 n 命令，会出现一个已安装版本的列表：
  
+ ![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/node-version.png)
+ 
+ 用键盘上下健选择版本，然后回车就可以切换默认 Node 版本了。
+ 
+ 
+ ## 直接启动不同版本的 Node
+ 
+ 假如我们将默认的 Node 版本设置为 6.10.0了，而我们要使用 7.6.0 来启动某个应用，我们可以使用下面方式：
+ 
+ ```
+ n use 7.6.0 index.js
+ ```
+ 
+ ## 总结
+ 
+ 更多的用法建议直接去 n 的官方 github 下面去学习。
+ 
  
