@@ -1,6 +1,6 @@
 ---
 
-title: ES6模板字符串
+title: JavaScript之ES6模板字符串
 
 date: 2018-05-02 09:46:14
 

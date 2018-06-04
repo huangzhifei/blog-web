@@ -1,6 +1,6 @@
 ---
 
-title: ES6+Promise
+title: JavaScript之ES6+Promise
 
 date: 2018-03-16 14:01:01
 
