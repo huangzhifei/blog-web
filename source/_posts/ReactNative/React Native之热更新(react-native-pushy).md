@@ -288,5 +288,78 @@ componentWillMount () {
 
 当前面几步完成后（基本不会报错，后面就会有点坑~）,我们就需要打 bundle 离线包及 IPA 包来测试验证一下热更新功能好不好用。
 
+1、bundle 离线包看之前文章或网上就行
 
+2、打包导出ipa文件
+
+3、注意: update.json 文件需要跟js文件在一个目录下，否则容易出现找不到文件报错
+
+## 发布到热更新服务器
+
+### 我们需要把之前打出来的 ipa 上传到服务器
+
+```
+$ pushy uploadIpa <your-package.ipa>
+
+```
+
+当我使用目前最新的 node 版本（10.x.x）时会报错
+
+```
+TypeError [ERR_INVALID_CALLBACK]: Callback must be a function
+    at maybeCallback (fs.js:124:9)
+    at Object.fs.write (fs.js:642:14)
+    at /Users/www/admin/build/webpack.dev.config.js:12:8
+    at FSReqWrap.oncomplete (fs.js:136:20)
+```
+类似于这样的错误，这是因为 node 版本太高了，我们需要降级，亲测降到 v8.11.1 可行，不过我发现此 bug 在前两天已经被 react-native-update 的维护者修复了，如果依然碰到这个问题，可以试试此方法。
+
+### 发布新的 bundle 代码
+
+我们更关心的是更改了 react native 的代码后，怎么使用热更新，我们使用下面的命令（在使用下面命令前我们并不需要自己打出离线包）
+
+```
+$ pushy bundle --platform <ios|android>
+Bundling with React Native version:  0.55.4
+<各种进度输出>
+Bundled saved to: build/output/ios.1459850548545.ipa
+Would you like to publish it?(Y/N)
+```
+
+如果想要立即发布，此时输入Y。当然，你也可以在将来使用pushy publish --platform <ios|android> <ppkFile>来发布版本。
+
+然后按钮提示一步一步操作就可以了
+
+这里又碰到一个坑爹的问题:
+
+```
+Bundling with React Native version: 0.55.4
+Error: Cannot find module 'metro-bundler/src/babelRegisterOnly'
+at Function.Module._resolveFilename (module.js:543:15)
+at Function.Module._load (module.js:470:25)
+at Module.require (module.js:593:17)
+at require (internal/module.js:11:18)
+at Object. (/Users/hulinhu/Desktop/react-naive/MyApp/node_modules/react-native-update/local-cli/lib/bundle.js:439:9)
+at Generator.next ()
+at step (/Users/hulinhu/Desktop/react-naive/MyApp/node_modules/react-native-update/local-cli/lib/bundle.js:310:191)
+at /Users/hulinhu/Desktop/react-naive/MyApp/node_modules/react-native-update/local-cli/lib/bundle.js:310:361
+at
+```
+
+原因是：在最新版本0.55.4中已经不存在metro-bundle这个module了，改成 metro 了，所以一定要注意，自己去node_modules下面找找这个模块。
+
+所以我们按照下面的方式更改就行了
+
+```
+把\node_modules\react-native-update\local-cli\lib\bundle.js中439行的'metro-bundler/src/babelRegisterOnly'改为'require('metro/src/babelRegisterOnly');'
+```
+
+这个 bug 也被作者修复了。（当我写这篇文章时去看，发现已经修复了，为佬不早修复了）
+
+当我们发布成功我们修复的 bundle 文件后，至此我们的热更新服务已经接入完毕，大家就可以自己去测试一下热更新了。
+
+
+## 总结
+
+上面碰到的问题，我通过查看 issues 基本上都找到解决原因，所以我们还是要多看看 github 上面的 issures 内容。
 
