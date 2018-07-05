@@ -352,7 +352,7 @@ D、使用可视化git客户端（非常推荐）
 比如 SourceTree，直接就可以在界面上修改，方便
 
 
-### 修改远程仓库名字
+### 3、修改远程仓库名字
 
 ```
 git remote rename [original-name] [new-name]
