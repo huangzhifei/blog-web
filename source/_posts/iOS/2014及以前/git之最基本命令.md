@@ -251,3 +251,121 @@ git merge dev_1
 ```
 
 先切到 master 分支上面，然后合并 dev_1 到 master 上面，如果有冲突就解决冲突，然后提交 commit， 最后 push，如果没有冲突，就正常提交 commit，然后 push
+
+## 远程仓库相关
+
+### 1、添加远程仓库地址（url）
+
+A、假如我们的项目原来就已经存了，我们想放到 github 上面，我们可以在项目根目录下面运行下面命令：
+
+```
+git init
+
+```
+
+B、这样我们就相当于初始化好了一个git本地的仓库，怎么和远程的关联起来了，很显然我们需要给这个本地仓库设置（或者说添加）一个远程仓库地址：
+
+```
+git remote add [shortname] [url]
+```
+
+shortname: 一个别名，用来以后引用
+url: 远程仓库地址
+
+C、我们可以使用下面的命令来查看远程仓库有多少个分支名
+
+```
+git remote -v
+```
+
+D、通过下面的命令来查看远程分支的信息
+
+```
+git remote show [remote-name]
+```
+
+remote-name: 远程分支名字，比如：origin
+
+### 2、修改远程仓库的地址（url）
+
+A、直接修改
+
+```
+git remote set-url [remote-name] [url]
+```
+
+remote-name: 远程仓库名
+url： 新的url地址
+
+例如：
+
+```
+git remote set-url origin http://192.168.100.235:9797/john/git_test.git
+```
+
+B、先删掉、在添加
+
+```
+git remote rm [remote-name]
+```
+
+remote-name: 名字，比如：origin
+
+然后就可以使用之前的命令添加了。
+
+C、直接在git配置项中修改（推荐）
+
+1、进入git_test/.git
+2、vim config 
+
+```
+
+[core] 
+
+repositoryformatversion = 0 
+
+filemode = true 
+
+logallrefupdates = true 
+
+precomposeunicode = true 
+
+[remote "origin"] 
+
+url = http://192.168.100.235:9797/shimanqiang/assistant.git 
+
+fetch = +refs/heads/*:refs/remotes/origin/* 
+
+[branch "master"] 
+
+remote = origin 
+
+merge = refs/heads/master
+
+```
+
+修改 [remote “origin”]下面的url即可
+
+D、使用可视化git客户端（非常推荐）
+
+比如 SourceTree，直接就可以在界面上修改，方便
+
+
+### 修改远程仓库名字
+
+```
+git remote rename [original-name] [new-name]
+
+```
+
+original-name: 原先的名字
+
+new-name: 新的名字
+
+比如：
+
+```
+git remote rename pb paul
+
+```
+
