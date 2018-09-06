@@ -37,13 +37,25 @@ Hexo 是一个快速、简洁且高效的博客框架。 Hexo 使用 Markdown �
 
 5、XCode 的 Command Line Tools （Mac下编译要用）
 
+
 ## 安装Hexo
 
 1、安装 Node.js 可以使用 Homebrew 去安装很方便
 
+```
+1、先安装 Homebrew (https://brew.sh/index_zh-cn.html)
+
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+2、在安装 node
+
+$ brew install node
+
+```
+
 2、安装 Git，对于 Mac OS X 自带就有
 
-3、安装 Hexo
+3、安装 Hexo (安装完 node 后才会有 npm 命令）
 	
 	$ npm install -g hexo-cli
 

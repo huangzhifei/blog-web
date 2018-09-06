@@ -41,6 +41,11 @@ $ sudo gem update - /usr/bin/update_rubygems
 $ gem sources --add https://ruby.taobao.org/ --remove https://rubygems.org/
 ```
 
+2018-09-06 更新：使用下面的地址
+```
+$ gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/
+```
+
 使用下面命令查看是否替换成功
 
 ```
@@ -52,8 +57,7 @@ $ gem sources -l
 ```
 *** CURRENT SOURCES ***
 
-https://rubygems.org/
-https://gems.ruby-china.org/
+https://gems.ruby-china.com/
 
 ```
 
