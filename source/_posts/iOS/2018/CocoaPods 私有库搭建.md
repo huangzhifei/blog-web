@@ -26,7 +26,7 @@ categories: CocoaPods
 
 主要命令是pod repo add REPO_NAME SOURCE_URL。其中，REPO_NAME 是私有 repo 的名字，取一个容易记住的名字，后面还会用到，以后公司内部的组件对应的 podspec 都可以推送到这个 repo 中；SOURCE_URL 就是刚刚我们创建的 Spec 仓库链接。
 
-	$ pod repo add eric https://github.com/eric/first.git
+	$ pod repo add eric https://github.com/eric/Spec.git
 	$ ls ~/.cocoapods/repos  
 	  eric	master
 
