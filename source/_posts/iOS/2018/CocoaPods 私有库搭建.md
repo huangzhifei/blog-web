@@ -57,8 +57,7 @@ categories: CocoaPods
 
 #### 3、我们开始制作 Podspec 文件。
 
-BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的源文件都在 BGNetwork/BGNetwork 路径下。我们将它放在
-CocoaPods 给第三方使用，主要是将这个文件夹下的源文件加载到第三方的项目中以供使用。
+BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的源文件都在 BGNetwork/BGNetwork 路径下。我们将它放在 CocoaPods 给第三方使用，主要是将这个文件夹下的源文件加载到第三方的项目中以供使用。
 下面是供第三方使用的源文件结构，具体可以下载 BGNetwork 代码查看
 
 	____BGNetwork
@@ -93,11 +92,11 @@ CocoaPods 给第三方使用，主要是将这个文件夹下的源文件加载�
 	  #对开源项目的描述
 	  spec.summary      = 'BGNetwork is a request util based on AFNetworking'
 	  #开源项目的首页
-	  spec.homepage     = 'https://github.com/chunguiLiu/BGNetwork'
+	  spec.homepage     = 'https://github.com/eric/BGNetwork'
 	  #作者信息
-	  spec.author       = {'chunguiLiu' => 'chunguiLiu@126.com'}
+	  spec.author       = {'eric' => 'eric@126.com'}
 	  #项目的源和版本号
-	  spec.source       = { :git => 'https://github.com/chunguiLiu/BGNetwork.git', :tag => '0.1.1' }
+	  spec.source       = { :git => 'https://github.com/eric/BGNetwork.git', :tag => '0.1.1' }
 	  #源文件，这个就是供第三方使用的源文件
 	  spec.source_files = "BGNetwork/*"
 	  #适用于ios7及以上版本
@@ -142,9 +141,9 @@ BGNetwork.podspec 文件中 spec.source 下 git 仓库链接是否没问题，gi
 如果查看 Note 信息看不出什么问题，可以加上 verbose 参数进行更详细的查看。
 
 
-	$ pod repo push liuchungui BGNetwork.podspec --allow-warnings --verbose
+	$ pod repo push eric BGNetwork.podspec --allow-warnings --verbose
 
-**注意事项：碰到本地使用pod lib lint验证通过，但是push到服务器却失败了，这个时候很可能就是服务器tag版本不对，使用--verbose能查看详细的错误信息。**
+**注意事项：碰到本地使用 pod lib lint 验证通过，但是 push 到服务器却失败了，这个时候很可能就是服务器 tag 版本不对，使用 --verbose 能查看详细的错误信息。**
 
 
 #### 5、搜索我们的框架
@@ -155,9 +154,9 @@ BGNetwork.podspec 文件中 spec.source 下 git 仓库链接是否没问题，gi
 	-> BGNetwork (0.1.2)
 	   BGNetwork is a request util based on AFNetworking
 	   pod 'BGNetwork', '~> 0.1.2'
-	   Homepage: https://github.com/chunguiLiu/BGNetwork
-	   Source:   https://github.com/chunguiLiu/BGNetwork.git
-	   Versions: 0.1.1, 0.1.0 [liuchungui repo] - 0.1.2, 0.1.1 [master repo]
+	   Homepage: https://github.com/eric/BGNetwork
+	   Source:   https://github.com/eric/BGNetwork.git
+	   Versions: 0.1.1, 0.1.0 [eric repo] - 0.1.2, 0.1.1 [master repo]
 
 由上面的搜索知道，BGNetwork 在 eric 这个私有 repo 中存在 0.1.1 和 0.1.0 版本，在 master 中存在 0.1.2 和 0.1.1 版本。
 搜索成功之后，我们将 BGNetwork.podspec 也推送到远程服务器。
