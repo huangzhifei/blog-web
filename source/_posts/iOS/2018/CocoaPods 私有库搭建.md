@@ -119,6 +119,11 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 	或
 	$ pod lib lint
 
+	# 注意可以在最后面 带上 --sources = ‘’
+	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose --sources = 'xxxx'
+	
+	# The sources from which to pull dependent pods(defaults to https://github.com/CocoaPods/Specs.git). Multiple sources must be comma-delimited.
+	
 
 **注意：验证的时候，会获取 BGNetwork.podspec 文件中的 spec.source 来获取 git 服务器上面对应版本的代码，
 然后再找到 spec.source_files 中的源代码，通过 xcode 命令行工具建立工程并且进行编译。所以这一步的过程会比较久，如果编译没有错误，就验证通过。**
