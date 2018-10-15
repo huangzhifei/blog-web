@@ -112,9 +112,11 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 
 #### 4、验证并推送到服务器
 
-在推送前，我们先验证Podspec，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和 BGNetwork.podspec 同级的，
+在推送前，我们先验证Podspec(检查本地pod)，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和 BGNetwork.podspec 同级的，
 验证命令如下：
 
+	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose
+	或
 	$ pod lib lint
 
 
@@ -183,4 +185,9 @@ BGNetwork.podspec 文件中 spec.source 下 git 仓库链接是否没问题，gi
 	$ pod update --verbose --no-repo-update
 
 
+#### 5、多个模块
 
+但如果我们需要拆分出几个子模块让开发者去选择, 这里有两种方案:
+
+开启多一个Git仓库, 分开来存储
+通过编写podspec文件的技巧拆分，（参照 AFNetworking)
