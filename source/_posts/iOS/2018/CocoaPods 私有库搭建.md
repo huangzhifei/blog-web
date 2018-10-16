@@ -119,7 +119,7 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 
 	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose
 	或
-	$ pod lib lint
+	$ pod lib lint 
 
 	# 注意可以在最后面 带上 --sources = ‘’
 	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose --sources = 'xxxx,https://github.com/CocoaPods/Specs.git'
@@ -133,7 +133,7 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 
 如果没有错误和警告我们就可以推送到服务器了，推送使用的命令如下：
 
-	$ pod repo push REPO_NAME SPEC_NAME.podspec
+	$ pod repo push REPO_NAME SPEC_NAME.podspec --allow-warnings --verbose
 	
 	# 注意可以在最后面 带上 --sources = ‘’
 	$ pod repo push REPO_NAME SPEC_NAME.podspec --allow-warnings --verbose --sources = 'xxxx,https://github.com/CocoaPods/Specs.git'
