@@ -122,9 +122,10 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 	$ pod lib lint
 
 	# 注意可以在最后面 带上 --sources = ‘’
-	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose --sources = 'xxxx'
+	$ pod lib lint BGNetwork.podspec --no-clean --allow-warnings --verbose --sources = 'xxxx,https://github.com/CocoaPods/Specs.git'
 	
 	# The sources from which to pull dependent pods(defaults to https://github.com/CocoaPods/Specs.git). Multiple sources must be comma-delimited.
+	# 意思是 这个podspec里面依赖了另一个私有库，为了能找到依赖私有库的地址，需要带上私有库的spec(索引库地址),其中 'xxxx'就是其地址
 	
 
 **注意：验证的时候，会获取 BGNetwork.podspec 文件中的 spec.source 来获取 git 服务器上面对应版本的代码，
@@ -133,7 +134,12 @@ BGNetwork 是一个基于 AFNetworking 而封装的网络框架，它主要的�
 如果没有错误和警告我们就可以推送到服务器了，推送使用的命令如下：
 
 	$ pod repo push REPO_NAME SPEC_NAME.podspec
-
+	
+	# 注意可以在最后面 带上 --sources = ‘’
+	$ pod repo push REPO_NAME SPEC_NAME.podspec --allow-warnings --verbose --sources = 'xxxx,https://github.com/CocoaPods/Specs.git'
+	
+	# The sources from which to pull dependent pods(defaults to https://github.com/CocoaPods/Specs.git). Multiple sources must be comma-delimited.
+	# 意思是 这个podspec里面依赖了另一个私有库，为了能找到依赖私有库的地址，需要带上私有库的spec(索引库地址),其中 'xxxx'就是其地址
 
 它也会先验证，然后再推送。我这里推送 BGNetwork 命令是：
 
