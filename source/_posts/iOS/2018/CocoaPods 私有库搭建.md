@@ -8,6 +8,8 @@ tags: CocoaPods
 categories: CocoaPods
 ---
 
+参照官方文档 [CocoaPods 官方文档](https://guides.cocoapods.org/terminal/commands.html#pod_repo_push)
+
 ### 一、创建两个 git 仓库
 
 我们创建两个 git 仓库，一个用来做私有 Spec Repo，一个是我们自己的公共组件：
