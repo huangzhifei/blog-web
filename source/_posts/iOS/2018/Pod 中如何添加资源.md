@@ -8,3 +8,6 @@ tags: CocoaPods
 categories: CocoaPods
 ---
 
+参照官方文档 [CocoaPods 官方文档](https://guides.cocoapods.org/syntax/podspec.html#resource_bundles)
+
+
