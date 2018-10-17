@@ -75,3 +75,11 @@ pod 'AFNetworking', '~>0'     	//高于0的版本，写这个限制和什么都�
 
 #### 引入某个特殊的提交节点
 	pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :commit => '082f8319af'
+
+#### 引入本地路径下代码
+	pod 'AFNetworking', :path => '../../../'
+
+#### 引入某库下面某几个subspec
+	pod 'AFNetworking', :subspecs=>['Reachability','Security']      或
+	pod 'AFNetworking', '~>0.1', :subspecs=>['Reachability','Security']
+	
