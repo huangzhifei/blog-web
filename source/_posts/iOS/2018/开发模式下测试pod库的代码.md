@@ -1,5 +1,5 @@
 ---
-title: 本地集成与测试podspec中的源码的工作方式
+title: 开发模式下测试pod库的代码
 
 date: 2018-10-19 14:14:04
 
@@ -20,7 +20,7 @@ categories: CocoaPods
 	
 ```
 
-然后执行 pod install 命令安装，然后打开项目发现库文件已经被加载到 Pods 子项目中了，不过没有在 Pods 目录下，而是在 Development Pods/ZJPodPrivateTest 目录下，因为是本地测试项目，没有吧 podspec 文件添加到 Spec Repo 中的缘故。
+然后执行 pod update 命令安装，然后打开项目发现库文件已经被加载到 Pods 子项目中了，不过没有在 Pods 目录下，而是在 Development Pods/ZJPodPrivateTest 目录下，因为是本地测试项目，没有把 podspec 文件添加到 Spec Repo 中的缘故。
 
 通过这种方式集成后，我们可以很方便的更改 Development Pods/ZJPodPrivateTest 下面的内容从而同步到对应的源文件中。
 
