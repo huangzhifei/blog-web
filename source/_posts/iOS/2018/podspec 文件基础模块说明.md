@@ -76,3 +76,27 @@ categories: CocoaPods
 指定源，s.source = { :git => 'https://github.com/sleepEarlier/PinHeaderLayout.git', :tag => s.version.to_s }
 
 
+#### 使用三方 .a 或 .framework 的样例
+
+拿微信当作例子
+
+1、先从微信开放平台下载微信sdk
+
+2、在NCKFoundation/NCKFoundation/Classes 目录下创建ThirdParty文件夹，并将.a和.h文件拖到ThirdParty文件夹下。（注意不要拖到工程目录下，而是文件目录）在podspec文件里修改source_file 为
+
+	spec.source_files = 'NCKFoundation/Classes/*.{h,m}', 'NCKFoundation/Classes/ThirdParty/*.{h}'
+	
+3、添加.a静态库的依赖,.a依赖的系统framework以及library
+
+	spec.vendored_libraries  = 'NCKFoundation/Classes/ThirdParty/*.{a}'
+	spec.frameworks = 	'SystemConfiguration','CoreGraphics','CoreTelephony','Security','CoreLocation','JavaScriptCore'
+	spec.libraries  = 'iconv','sqlite3','stdc++','z'
+
+4、参数说明
+
+	vendored_libraries: 第三方.a文件
+
+	frameworks: 该pod依赖的系统framework
+
+	libraries: 该pod依赖的系统library
+	
