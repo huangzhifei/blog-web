@@ -23,10 +23,19 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '8.0'
   s.requires_arc = true
   
-  s.subspec 'QSDK' do |ss|
-    #ss.vendored_libraries = "#{sf_source_class_prefix}/QSDK/**/*.a"
-    ss.vendored_frameworks = "#{sf_source_class_prefix}/QSDK/**/*.framework"
-    ss.resources           = "#{sf_source_class_prefix}/QSDK/**/*.bundle"
+  s.subspec 'QuanshiSDK' do |ss|
+    ss.vendored_frameworks = "#{sf_source_class_prefix}/QuanshiSDK/**/*.framework"
+    ss.resources           = "#{sf_source_class_prefix}/QuanshiSDK/**/*.bundle"
+  end
+
+  s.subspec 'SFGather' do |ss|
+    ss.vendored_frameworks = "#{sf_source_class_prefix}/SFGather/**/*.framework"
+  end
+
+  s.subspec 'cryptopp' do |ss|
+    ss.public_header_files = "#{sf_source_class_prefix}/cryptopp/**/*.h"
+    ss.source_files = "#{sf_source_class_prefix}/cryptopp/**/*.{h,m,mm,c}"
+    ss.vendored_libraries = "#{sf_source_class_prefix}/cryptopp/**/*.a"
   end
   
 
