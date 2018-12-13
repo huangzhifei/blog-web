@@ -23,7 +23,12 @@ sudo gem install cocoapods
 
 ```
 pod trunk register email 'username' --verbose
+
+例子：
+pod trunk register xxxxx@126.com 'xxxxxx' --verbose
+
 ```
+
 之后会给对应邮箱发一份邮箱，去邮箱验证一下就行了（基本上会被当成垃圾邮件)
 
 ### 2、github仓库
