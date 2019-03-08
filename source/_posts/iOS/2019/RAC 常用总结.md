@@ -232,30 +232,33 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 
 1、给此 button 添加响应函数
 
-```
-[self.btn addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
-
-- (void)buttonClick:(UIButton *)sender {
-    NSLog(@"xxxxxx");
-}
-```     
+	[self.btn addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
+		
+	- (void)buttonClick:(UIButton *)sender {
+	    NSLog(@"xxxxxx");
+	}
 
 2、在 ViewController 中使用 rac_signalForSelector 订阅
 
+
 ```
+
 [[self.delegateView rac_signalForSelector:@selector(buttonClick:)] subscribeNext:^(RACTuple * _Nullable x) {
         NSLog(@"button2: %@", x);
-    }];
+}];
+    
 ```
 
 上面说了原理是：只要 @selector 中的方法被调用就可以触发 rac_signalForSelector 来监听，所以其实第一步不一定非得使用 addTarget:action: 来触发调用，我们用下面方式来触发也能达到效果：
 
 ```
+
 @weakify(self);
 [[self.btn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl *_Nullable x) {
     @strongify(self);
     [self buttonClick:self.btn];
 }];
+
 ```
 
 ### 2、代替 KVO
@@ -271,6 +274,7 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 
 ```
 
+
 ### 3、代替 Control Event
 
 ```
@@ -280,12 +284,14 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 
 ```
 
+
 ### 4、代替通知（NSNotificationCenter）
 
 ```
 [[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardWillShowNotification object:nil] subscribeNext:^(id x) {
         NSLog(@"键盘弹出");
-    }];
+}];
+    
 ```
 
 ### 5、监听文本框文字改变
@@ -303,6 +309,7 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 处理当界面有多次请求时，需要都获取到数据时，才能展示界面。
 
 ```
+
 rac_liftSelector:withSignalsFromArray:Signals:
 
 ```
@@ -314,6 +321,7 @@ rac_liftSelector:withSignalsFromArray:Signals:
 不需要主动去订阅 signalA、signalB ......,方法内部会自动订阅。
 
 ```
+
 // 创建
 RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
     double delayInSeconds = 2.0;
