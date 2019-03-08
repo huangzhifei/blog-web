@@ -13,6 +13,8 @@ categories: RAC
 
 ### 1、RAC()
 
+用于给某个对象的某个属性绑定。把一个对象的某个属性绑定一个信号,只要发出信号,就会把信号的内容给对象的属性赋值。
+
 ```
 RAC(self.collectionView, headArray)  = RACObserve(self.viewModel, headData);
 
@@ -22,6 +24,8 @@ RAC(TARGET, [KEYPATH, [NIL_VALUE]]):用于给某个对象的某个属性绑定�
 意思是：只要 self.viewModel 的 headData 内容改变 就会自动同步到 self.collectionView 的 headArray 上。
 
 ### 2、RACObserve()
+
+用于给某个对象的某个属性绑定，快速的监听某个对象的某个属性改变，返回的是一个信号,对象的某个属性改变的信号
 
 ```
 
@@ -255,4 +259,95 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 ```
 
 ### 2、代替 KVO
+
+不用在像以前那样代码分离的写很多代码，直接使用 rac_valuesAndChangesForKeyPath 
+
+```
+[[self.delegateView rac_valuesAndChangesForKeyPath:@"backgroundColor"
+                                               options:NSKeyValueObservingOptionNew observer:nil]
+     subscribeNext:^(id x) {
+         NSLog(@"self.delegateView: %@",x);
+    }];
+
+```
+
+### 3、代替 Control Event
+
+```
+[[self.btn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl *_Nullable x) {
+	NSLog(@"%@",x);
+}];
+
+```
+
+### 4、代替通知（NSNotificationCenter）
+
+```
+[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardWillShowNotification object:nil] subscribeNext:^(id x) {
+        NSLog(@"键盘弹出");
+    }];
+```
+
+### 5、监听文本框文字改变
+
+```
+[[self.textField rac_textSignal] subscribeNext:^(NSString *_Nullable value) {
+	@strongify(self);
+	self.label.text = value;
+}];
+
+```
+
+### 6、rac_liftSelector 多次请求全部完成才触发
+
+处理当界面有多次请求时，需要都获取到数据时，才能展示界面。
+
+```
+rac_liftSelector:withSignalsFromArray:Signals:
+
+```
+当传入的Signals(信号数组)，每一个signal都至少sendNext过一次，就会去触发第一个selector参数的方法。
+
+注意：
+
+有几个信号，参数一的方法就有几个参数，每个参数对应信号发出的数据。
+不需要主动去订阅 signalA、signalB ......,方法内部会自动订阅。
+
+```
+// 创建
+RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    double delayInSeconds = 2.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [subscriber sendNext:@"A"];
+    });
+    return nil;
+}];
+
+RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"B"];
+    [subscriber sendNext:@"Another B"];
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+[self rac_liftSelector:@selector(doA:withB:) withSignals:signalA, signalB, nil];
+
+
+// 响应方法
+- (void)doA:(NSString *)A withB:(NSString *)B {
+    NSLog(@"A:%@ and B:%@", A, B);
+}
+
+```
+
+输出打印：
+
+```
+
+A:A and B:Another B
+
+```
+
+signalB 第一次发送的内容 @“B” 被后面的 @"Another B" 覆盖，因为要等 signalA 也发送一次后，才能触发。
 
