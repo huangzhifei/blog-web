@@ -65,7 +65,7 @@ flattenMap 和 map 都是用于把源信号内容映射成新的内容
 4. 开发中，如果信号发出的值是信号，映射一般使用 flattenMap
 
 
-### concat 合并
+### concat 合并，有顺序的处理多个信号
 
 按一定顺序拼接信号，当多个信号发出的时候，有顺序的接收信号
 
@@ -105,4 +105,56 @@ RACSignal *signalB = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSu
 
 1. 使用 concat 连接 then 返回的信号
 2. 先过滤掉之前的信号发出的值
+
+```
+
+[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    [subscriber sendNext:@"test1"];
+    [subscriber sendCompleted];
+    return nil;
+}] then:^RACSignal * _Nonnull{
+    return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [subscriber sendNext:@"test2"];
+        return nil;
+    }];
+}] subscribeNext:^(id  _Nullable x) {
+    // 只能接收到第二个信号的值，也就是then返回信号的值
+    NSLog(@"then content: %@", x);
+}];
+
+```
+
+会过滤掉第一个 “test1”，只接收第二个信号发送过来的值。
+
+
+### merge 合并，合成一个信号
+
+把多个信号合并为一个信号，任何一个信号有新值的时候就会调用，没有先后顺序，依赖关系（和 concat 的区别）
+
+```
+
+RACSignal *signalA = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [subscriber sendNext:@"merge signal 1"];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+
+    RACSignal *signalB = [RACSignal createSignal:^RACDisposable *_Nullable(id<RACSubscriber> _Nonnull subscriber) {
+        [subscriber sendNext:@"merge signal 2"];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+    
+    // 合并信号,任何一个信号发送数据，都能监听到.
+    RACSignal *mergeSignal = [signalA merge:signalB];
+    [mergeSignal subscribeNext:^(id  _Nullable x) {
+        NSLog(@"merge content: %@", x);
+    }];
+
+```
+
+**注意：只要有一个信号被发出就会被监听**
+
+
+### combineLatest 结合
 
