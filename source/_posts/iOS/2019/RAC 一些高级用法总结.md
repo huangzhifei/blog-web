@@ -158,3 +158,127 @@ RACSignal *signalA = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSu
 
 ### combineLatest 结合
 
+将多个信号合并起来，并且拿到各个信号的最新的值，必须每个合并的 signal 至少都有一次 sendNext，才会触发合并的信号。
+
+```
+
+RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"combineLatest signalA"];
+    return nil;
+}];
+
+RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"combineLatest signalB"];
+    return nil;
+}];
+
+// 把两个信号组合成一个信号,跟zip一样，没什么区别
+RACSignal *combineSignal = [signalA combineLatestWith:signalB];
+
+[combineSignal subscribeNext:^(id x) {
+    NSLog(@"combineLatest content: %@",x); // (combineLatest signalA, combineLatest signalB)
+}];
+
+
+```
+
+
+
+### reduce 聚合
+
+用于信号发出的内容是元组，把信号发出元组的值聚合成一个值，一般都是先组合在聚合。
+
+```
+
+RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"reduce signalA"];
+    return nil;
+}];
+
+RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"reduce signalB"];
+    return nil;
+}];
+
+// reduceblock的返回值：聚合信号之后的内容。
+RACSignal *reduceSignal = [RACSignal combineLatest:@[signalA,signalB] reduce:^id(NSNumber *num1 ,NSNumber *num2){
+    return [NSString stringWithFormat:@"%@ %@",num1,num2];
+}];
+
+[reduceSignal subscribeNext:^(id x) {
+    NSLog(@"reduce content: %@",x); // (reduce signalA, reduce signalB)
+}];
+
+
+```
+
+
+### filter 过滤
+
+过滤信号，获取满足条件的信号 
+
+获取到位数大于 6 的值
+
+```
+
+[[self.textField.rac_textSignal filter:^BOOL(NSString *value) {
+    return value.length > 6;
+}] subscribeNext:^(NSString * _Nullable x) {
+    NSLog(@"filter content: %@",x); // x 值位数大于6
+}];
+
+
+```
+
+### ignore 忽略
+
+忽略掉指定的值
+
+忽略掉值为 "999" 的信号
+
+```
+
+[[self.textField.rac_textSignal ignore:@"999"] subscribeNext:^(id x) {
+    NSLog(@"ignore content: %@",x);
+}];
+
+```
+
+### interval 定时
+
+每隔一段时间发出信号
+
+类似于 NSTimer
+
+每隔 1 秒发送一次信号
+
+```
+
+[[RACSignal interval:1 onScheduler:[RACScheduler currentScheduler]] subscribeNext:^(id x) {
+    NSLog(@"%@",x);
+}];
+
+```
+
+
+### delay 延迟
+
+延迟执行，类似于 GCD 的 after。
+
+下面例子主要是延迟发送 next
+
+
+```
+
+[[[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"delay signalA"];
+    return nil;
+}] delay:2] subscribeNext:^(id x) {
+    NSLog(@"%@",x);
+}];
+
+
+```
+
+延迟 2 秒后收到 信号 @"delay signalA"
+
