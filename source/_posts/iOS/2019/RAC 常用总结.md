@@ -144,7 +144,7 @@ RACSubject 继承于 RACSignal，又遵循了 RACSubscriber 协议，所以既�
 
 ### 7、RACCommand 事件处理
 
-RACCommand 是处理事件的类，可以把事件如何处理，事件中的数据如何传递，包装到这个类中。
+RACCommand 是处理事件的类，可以把事件如何处理，事件中的数据如何传递，包装到这个类中，可以很方便的监控事件的执行过程。
 
 下面例子：监听按钮的点击，发送网络请求：
 
@@ -155,33 +155,59 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
         // 必须返回一个信号,不能为空.(信号中的信号)
         // 3.创建信号用来传递数据
         return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-            [subscriber sendNext:@"信号中的信号发送的数据"];
-            // 注意:数据传递完成,要调用sendCompleted才能执行完毕
-            [subscriber sendCompleted];
-            return nil;
+            // 模拟网络加载
+				[self loadData:^(id response) {
+				    // 注意：数据传递完，最好调用sendCompleted，这时命令才执行完毕。
+				    [subscriber sendNext:response];
+				    [subscriber sendCompleted];
+				} fail:^(NSError *error) {
+				    [subscriber sendError:error];
+				}];
+
+             return nil;
         }];
     }];
     self.command = command;
     
-    // 2.订阅信号中的信号(必须要在执行命令前订阅)
-    [command.executionSignals.switchToLatest subscribeNext:^(id x) {
+    // 2.订阅 RACCommand 中的信号(必须要在执行命令前订阅)
+    [command.executionSignals subscribeNext:^(id x) {
         NSLog(@"接收到信号中的信号发送的数据:%@",x);
+        // x 为信号中的信号
+		 [x subscribeNext:^(id  _Nullable x) {
+		    // 此处的 x 才是网络请求到的数据
+		    NSLog(@"%@",x);
+		  }];
     }];
     
     
     // 4.执行命令
     [command execute:@1];
     
-    // 监听命令是否执行完毕,默认会来一次，可以直接跳过，skip表示跳过第一次信号。
+    <!--// 监听命令是否执行完毕,默认会来一次，可以直接跳过，skip表示跳过第一次信号。
     [[command.executing skip:1] subscribeNext:^(id x) {
         if ([x boolValue] == YES) {
             NSLog(@"正在执行");
         }else{
             NSLog(@"未开始/执行完成");
         }
-    }];
+    }];-->
 
 ```
+
+其中上述步骤 二 可以简化为下面方式：
+
+```
+
+// switchToLatest:用于signal of signals，获取signal of signals发出的最新信号,也就是可以直接拿到 RACCommand 中的信号
+[command.executionSignals.switchToLatest subscribeNext:^(id x) {
+    // 网络请求到的数据
+    NSLog(@"%@",x);
+}];
+
+
+```
+
+
 
 
 ## RAC 常用用法
