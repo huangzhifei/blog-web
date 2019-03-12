@@ -245,6 +245,7 @@ RACCommand 是处理事件的类，可以把事件如何处理，事件中的数
 
 [[self.delegateView rac_signalForSelector:@selector(buttonClick:)] subscribeNext:^(RACTuple * _Nullable x) {
         NSLog(@"button2: %@", x);
+        UIButton *btn = (UIButton *)x[0];
 }];
     
 ```
