@@ -13,7 +13,23 @@ categories: RAC
 
 ### 1、bind 绑定/包装
 
-没弄明白
+bind 主要作用属于包装，将信号返回的值包装成一个新的值，然后在通过信号返回给订阅者。
+
+1. 传入一个返回值 RACSignalBindBlock 的 block
+2. 描述一个 RACSignalBindBlock 类型的 bindBlock 作为 block 的返回值
+3. 描述一个返回结果的信号，作为 bindBlock 的返回值，注意在 bindBlock 中做信号结果的处理
+
+```
+[[self.textField.rac_textSignal bind:^RACSignalBindBlock _Nonnull {
+    return ^RACSignal *(id value, BOOL *stop) {
+        // 做好处理，通过信号返回出去.
+        return [RACSignal return:[NSString stringWithFormat:@"hello: %@", value]];
+    };
+}] subscribeNext:^(id _Nullable x) {
+    NSLog(@"bind content: %@", x); // hello: xxxxx
+}];
+
+```
 
 
 ### flattenMap & map 映射
@@ -254,8 +270,16 @@ RACSignal *reduceSignal = [RACSignal combineLatest:@[signalA,signalB] reduce:^id
 
 ```
 
-[[RACSignal interval:1 onScheduler:[RACScheduler currentScheduler]] subscribeNext:^(id x) {
-    NSLog(@"%@",x);
+// 这个就是RAC中的GCD
+self.disposable = [[RACSignal interval:1.0 onScheduler:[RACScheduler mainThreadScheduler]] subscribeNext:^(NSDate *_Nullable x) {
+    self.time--;
+    NSString *title = self.time > 0 ? [NSString stringWithFormat:@"请等待 %ld 秒后重试", self.time] : @"发送验证码";
+    [self.countDownBtn setTitle:title forState:UIControlStateNormal];
+    self.countDownBtn.enabled = (self.time == 0) ? YES : NO;
+    if (self.time == 0) {
+        // 取消这个订阅
+        [self.disposable dispose];
+    }
 }];
 
 ```
