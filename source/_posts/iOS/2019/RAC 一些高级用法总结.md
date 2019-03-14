@@ -31,6 +31,11 @@ bind 主要作用属于包装，将信号返回的值包装成一个新的值，
 
 ```
 
+### distinctUntilChanged 对比上一次信号内容
+
+
+
+
 
 ### flattenMap & map 映射
 
@@ -377,5 +382,26 @@ RACSignal *signal = [[RACSignal createSignal:^RACDisposable *_Nullable(id<RACSub
 
 ### takeLast 获取最后 N 次的信号
 
-前提条件：订阅者必须调用完成，因为只有完成，才知道总共有多少个信号
+前提条件：订阅者必须调用完成，因为只有完成，才知道总共有多少个信号。
+
+```
+
+RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@"signal1"];
+    [subscriber sendNext:@"signal2"];
+    [subscriber sendNext:@"signal3"];
+    [subscriber sendNext:@"signal4"];
+    [subscriber sendCompleted];
+    // 上面调用 sendCompleted 之后，会直接进入下面的订阅回调，打印最后 3 条信号，然后在打印下面的 "send completed"
+    NSLog(@"send completed");
+    return nil;
+
+}] takeLast:3];
+
+[signal subscribeNext:^(id x) {
+    NSLog(@"testTakeLast : %@",x); // 会打印最后 3 条，并且所有的信号都已经发送完成了。
+}];
+
+```
+
 
