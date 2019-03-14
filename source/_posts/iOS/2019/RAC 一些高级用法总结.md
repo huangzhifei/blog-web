@@ -306,3 +306,76 @@ self.disposable = [[RACSignal interval:1.0 onScheduler:[RACScheduler mainThreadS
 
 延迟 2 秒后收到 信号 @"delay signalA"
 
+
+
+### take 取信号
+
+从开始一共取 N 次的信号发送（0 - (N-1))
+
+```
+
+// 取前 N 个
+[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    [subscriber sendNext:@"signal 1"];
+    [subscriber sendNext:@"signal 2"];
+    [subscriber sendNext:@"signal 3"];
+    [subscriber sendCompleted];
+    return nil;
+}] take:2] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"take content: %@", x); // only 1 and 2 will be print
+}];
+
+```
+
+### skip 跳过
+
+从开始一共跳过 N 次的信号发送，只接受之后的信号
+
+```
+
+// 跳过前 N 个
+[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    [subscriber sendNext:@"signal 1"];
+    [subscriber sendNext:@"signal 2"];
+    [subscriber sendNext:@"signal 3"];
+    [subscriber sendCompleted];
+    return nil;
+}] skip:2] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"skip : %@", x); // only 3 will be print
+}];
+
+```
+
+### takeUntil 获取信号当某个信号执行完成就停止订阅
+
+```
+
+// RAC 这个消息是 2 秒后完成, 所以 signal1 signal2 这两个消息是可以发送到 而 3 秒后的 signal3 signal4 就不会发送.
+RACSignal *signal = [[RACSignal createSignal:^RACDisposable *_Nullable(id<RACSubscriber> _Nonnull subscriber) {
+    [subscriber sendNext:@"signal1"];
+    [subscriber sendNext:@"signal2"];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [subscriber sendNext:@"signal3"];
+        [subscriber sendNext:@"signal4"];
+        [subscriber sendCompleted];
+    });
+    [subscriber sendCompleted];
+    return nil;
+}] takeUntil:[RACSignal createSignal:^RACDisposable *_Nullable(id<RACSubscriber> _Nonnull subscriber) {
+       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+           [subscriber sendNext:@"RAC"];
+           [subscriber sendCompleted];
+       });
+       return nil;
+   }]];
+
+[signal subscribeNext:^(id _Nullable x) {
+    NSLog(@"takeUntil: %@", x); // only signal1 & signal2 will be print
+}];
+
+```
+
+### takeLast 获取最后 N 次的信号
+
+前提条件：订阅者必须调用完成，因为只有完成，才知道总共有多少个信号
+
