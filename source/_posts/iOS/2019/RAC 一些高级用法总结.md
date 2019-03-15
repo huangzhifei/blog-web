@@ -447,3 +447,66 @@ RACSubject *signalB = [RACSubject subject];
 
 ```
 
+### doNext 
+
+### doCompleted
+
+### timeout
+
+### retry
+
+### replay
+
+### repeat
+
+### throttle 节流
+
+当某个信号发送比较频繁时，可以使用节流，在某一段时间差不发送信号内容，过一段时间差后获取信号最新发出的内容，常用场景：
+
+1. 阻止 “快速点击” 重复响应等问题。
+2. 输入框内容不是一变化就请求后台（后台扛不住)，可以延迟一会在请求或者输入很快可以让其快速只响应最终的结果。
+
+
+
+```
+
+RACSubject *subject = [RACSubject subject];
+[[subject throttle:0.5] subscribeNext:^(id _Nullable x) {
+    NSLog(@"throttle: %@", x); // 打印：signalB、signalC、signalD、signalE
+}];
+
+[subject sendNext:@"signalA"];
+[subject sendNext:@"signalB"];
+// 1、signalA 和 signalB 之间间隔不足 0.5 秒，但是 signalB 与 signalC 间隔超过 0.5 秒，所以先打印 signalB
+// 2、signalC 和 signalD 之间间隔超过 0.5 秒，所以会打印 signalC
+// 3、signalD 和 signalE 之间间隔超过 0.5 秒，所以会打印 signalD
+// 4、signalE 之后没有了，所以会打印 signalE
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [subject sendNext:@"signalC"];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [subject sendNext:@"signalD"];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [subject sendNext:@"signalE"];
+    });
+});
+
+```
+
+打印输出：
+
+```
+
+打印：signalB、signalC、signalD、signalE
+
+```
+
+分析：
+
+1. signalA 和 signalB 之间间隔不足 0.5 秒，但是 signalB 与 signalC 间隔超过 0.5 秒，所以先打印 signalB。
+2. signalC 和 signalD 之间间隔超过 0.5 秒，所以会打印 signalC。
+3. signalD 和 signalE 之间间隔超过 0.5 秒，所以会打印 signalD。
+4. signalE 之后没有了，所以会打印 signalE。
+
