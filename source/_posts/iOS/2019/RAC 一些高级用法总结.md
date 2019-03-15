@@ -33,8 +33,26 @@ bind 主要作用属于包装，将信号返回的值包装成一个新的值，
 
 ### distinctUntilChanged 对比上一次信号内容
 
+实现是用 bind 来完成的，每次变换中都记录一下原信号上一次发送过来的值，并与这一次进行比较，如果是相同的值，就“吞掉”，返回 empty 信号，只有和原信号上一次发送的值不同才会变换成新信号把这个值发送出去。
+
+```
+
+RACSubject *signal = [RACSubject subject];
+[[signal distinctUntilChanged] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"distinctUntilChanged : %@", x); // will only print "eric", "eric hzf", "eric"
+}];
+
+// 发送一次信号，内容为 eric
+[signal sendNext:@"eric"];
+
+// 发送二次信号，内容依然为 eric，但是使用 distinctUntilChanged 后不会在接收与上一次重复的内容
+[signal sendNext:@"eric"];
+
+// 发送三次信号，内容为 eric hzf
+[signal sendNext:@"eric hzf"];
 
 
+```
 
 
 ### flattenMap & map 映射
