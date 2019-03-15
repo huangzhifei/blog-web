@@ -423,3 +423,27 @@ RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> 
 ```
 
 
+### switchToLatest
+
+获取信号中信号最近发出信号，订阅最近发出的信号。
+
+注意：switchToLatest 使用的对象是信号中的信号（signalOfsignals)，即 sendNext 的参数也是信号。
+
+
+```
+
+RACSubject *signalOfSignals = [RACSubject subject];
+RACSubject *signalA = [RACSubject subject];
+RACSubject *signalB = [RACSubject subject];
+// 获取信号中信号最近发出信号，订阅最近发出的信号。
+// 注意switchToLatest：只能用于信号中的信号
+[signalOfSignals.switchToLatest subscribeNext:^(id x) {
+    NSLog(@"switchToLatest: %@", x); // will only print signalB
+}];
+[signalOfSignals sendNext:signalA];
+[signalOfSignals sendNext:signalB];
+[signalA sendNext:@"signalA"];
+[signalB sendNext:@"signalB"];
+
+```
+
