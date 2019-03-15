@@ -59,8 +59,8 @@ RACSubject *signal = [RACSubject subject];
 
 flattenMap 和 map 都是用于把源信号内容映射成新的内容
 
-##### 1、flattenMap 的底层实现是通过 bind 实现的
-##### 2、map 的底层实现是通过 flattenMap 实现的
+##### flattenMap 的底层实现是通过 bind 实现的
+##### map 的底层实现是通过 flattenMap 实现的
 
 #### flattenMap 使用步骤：
 
@@ -449,13 +449,28 @@ RACSubject *signalB = [RACSubject subject];
 
 ### doNext 
 
+执行 next 之前，会先执行这个 block
+
+
 ### doCompleted
 
-### timeout
+执行 sendCompleted 之前，会先执行这个Block 
 
-### retry
+
+### timeout 超时
+
+超时，可以让一个信号在一定的时间后，自动报错。
+
+
+### retry 重试
+
+重试，只要失败，就会重新执行创建信号中的 block ，直到成功。
+
 
 ### replay
+
+重放，当一个信号被多次订阅，反复播放内容
+
 
 ### repeat
 
