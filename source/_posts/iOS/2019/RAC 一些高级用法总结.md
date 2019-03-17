@@ -452,27 +452,186 @@ RACSubject *signalB = [RACSubject subject];
 执行 next 之前，会先执行这个 block
 
 
+```
+
+[[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    NSLog(@"testDoNextAndDoCompleted start sendNext");
+    [subscriber sendNext:@"hello do next"];
+    NSLog(@"testDoNextAndDoCompleted end sendNext");
+    
+    NSLog(@"testDoNextAndDoCompleted start sendCompleted");
+    [subscriber sendCompleted];
+    NSLog(@"testDoNextAndDoCompleted end sendCompleted");
+    
+    return nil;
+}] doNext:^(id  _Nullable x) {
+    // 在执行 [subscriber sendNext:@"hello do next"]; 之前会先执行 doNext：
+    NSLog(@"test do next");
+}] doCompleted:^{
+    // 在执行 [subscriber sendCompleted]; 之前会先执行 doCompleted：
+    NSLog(@"test do completed");
+}] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"testDoNextAndDoCompleted: %@", x);
+}];
+
+/*
+ 最终打印顺序：
+ 
+ testDoNextAndDoCompleted start sendNext
+ test do next
+ testDoNextAndDoCompleted: hello do next
+ testDoNextAndDoCompleted end sendNext
+ testDoNextAndDoCompleted start sendCompleted
+ test do completed
+ testDoNextAndDoCompleted end sendCompleted
+
+ **/
+
+
+```
+
+
 ### doCompleted
 
-执行 sendCompleted 之前，会先执行这个Block 
+执行 sendCompleted 之前，会先执行这个Block。
+
+详细例子见上面 doNext
 
 
 ### timeout 超时
 
-超时，可以让一个信号在一定的时间后，自动报错。
+如果一个信号在指定时间内没有发送信号，就会超时，可以让一个信号在一定的时间后，自动报错。
+
+```
+
+[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    
+    //无任何操作 等超时
+    
+//        [subscriber sendNext:@"signal A"];
+//        NSError *error = [[NSError alloc]initWithDomain:@"unknwn domain" code:600 userInfo:@{@"error":@"超时"}];
+//        [subscriber sendError:error];
+//        [subscriber sendCompleted];
+    return nil;
+}] timeout:3.0 onScheduler:[RACScheduler mainThreadScheduler]] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"timeout :%@", x); // 超时后不会进入到这里
+} error:^(NSError * _Nullable error) {
+    NSLog(@"timeout 超时: %@", error); // 3 秒超时后，会打印超时错误
+}];
 
 
-### retry 重试
-
-重试，只要失败，就会重新执行创建信号中的 block ，直到成功。
+```
 
 
-### replay
+### retry 重试 或 retry:count
 
-重放，当一个信号被多次订阅，反复播放内容
+重试，只要失败，就会重新执行创建信号中的 block，一直重试，直到成功。
+如果后面指定次数，就会在相应的次数之后结束。
 
 
-### repeat
+```
+
+// 重试，不执行 error block，一直到执行 sendNext 成功才结束
+__block NSInteger count = 1;
+[[[RACSignal createSignal:^RACDisposable *_Nullable(id<RACSubscriber> _Nonnull subscriber) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (count == 5) {
+            [subscriber sendNext:@"retry 执行 sendNext 成功"];
+            [subscriber sendCompleted];
+        } else {
+            // 注意：这里一定要发送一个错误信号，不然就不会继续往下面走，也就永远不会达到错误重试的次数和效果
+            // 但是这个 error 是不会被下面的 error：订阅到的，也就是说不会触发下面那个 error：的监听
+            [subscriber sendError:[NSError errorWithDomain:@"unknown domain"
+                                                      code:500
+                                                  userInfo:@{
+                                                      @"msg" : [NSString stringWithFormat:@"次数：%ld", count]
+                                                  }]];
+        }
+        ++count;
+    });
+    return nil;
+}] retry:6] subscribeNext:^(id _Nullable x) {
+    NSLog(@"retry: %@", x);
+} error:^(NSError *_Nullable error) {
+    NSLog(@"retry error: %@", error);
+}];
+
+```
+
+注意上面代码中的注释，必须要发送一个 error 信号的，并且要知道他是错误重试，如果不发生错误就不会重试的。
+
+
+
+### replay 反复播放（不是重新触发执行）
+
+多个订阅者，只执行一遍副作用，如果没有 replay 就要重复执行副作用。
+
+
+```
+
+__block NSInteger count = 1; // 副作用
+    RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:[NSString stringWithFormat:@"signal A with count = %ld", count]];
+        ++ count;
+        [subscriber sendNext:[NSString stringWithFormat:@"signal B with count = %ld", count]];
+        ++count;
+        return nil;
+    }] replay];
+    
+    [signal subscribeNext:^(id x) {
+        NSLog(@"test replay 订阅1: %@", x);
+    }];
+    
+    [signal subscribeNext:^(id x) {
+        NSLog(@"test replay 订阅2: %@", x);
+    }];
+    
+    // 使用 replay 打印输出：
+    /*
+     test replay 订阅1: signal A with count = 1
+     test replay 订阅1: signal B with count = 2
+     test replay 订阅2: signal A with count = 1
+     test replay 订阅2: signal B with count = 2
+     **/
+    
+    // 不使用 replay 打印输出：
+    /*
+     test replay 订阅1: signal A with count = 1
+     test replay 订阅1: signal B with count = 2
+     test replay 订阅2: signal A with count = 3
+     test replay 订阅2: signal B with count = 4
+     **/
+
+```
+
+从上面的打印可以看出来：
+1. 使用 replay 之后，就像是一个镜像一样了，之后的订阅都是在重复播放之前的镜像，所以外面的副作用 count 的值不会在继续增长。
+2. 不使用 replay 的话，那么下面的每一次的订阅都会重新触发一次发送信号，副作用 count 的值就会持续增长。
+
+
+
+
+### repeat 无限循环的重复执行
+
+
+```
+
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *_Nullable(id<RACSubscriber> _Nonnull subscriber) {
+    [subscriber sendNext:@"signal A"];
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+// 使用 repeat 之后，将无限循环的接收信号
+[[[signal delay:1.0] repeat] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"testRepeat: %@", x); // 无限循环打印：testRepeat: signal A
+}];
+
+```
+
+由于使用 delay:1.0，所以会每隔 1 秒打印一次，如果不使用将会没有间隔的重复打印。
+
+
 
 ### throttle 节流
 
