@@ -684,3 +684,125 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), 
 3. signalD 和 signalE 之间间隔超过 0.5 秒，所以会打印 signalD。
 4. signalE 之后没有了，所以会打印 signalE。
 
+
+### zip
+
+给定一个信号数组 signal_array[N]，创建一个信号 zip_return，当订阅 zip_return 时，会等待 signal_array 中每一个信号都 sendNext:value 后，zip_return 才会 sendNext，zip_return 传出的值是 [value1, value2, ......, valueN];
+
+```
+RACSignal *signalA = [RACSignal createSignal:
+                                   ^RACDisposable *(id<RACSubscriber> subscriber) {
+                                       [subscriber sendNext:@"signal A1"];
+                                       [subscriber sendNext:@"signal A2"];
+                                       [subscriber sendCompleted];
+                                       return [RACDisposable disposableWithBlock:^{
+                                           NSLog(@"signalA dispose");
+                                       }];
+                                   }];
+
+RACSignal *signalB = [RACSignal createSignal:
+                                    ^RACDisposable *(id<RACSubscriber> subscriber) {
+                                        [subscriber sendNext:@"signal B1"];
+                                        [subscriber sendNext:@"signal B2"];
+                                        [subscriber sendNext:@"signal B3"];
+                                        [subscriber sendCompleted];
+                                        return [RACDisposable disposableWithBlock:^{
+                                            NSLog(@"signalB dispose");
+                                        }];
+                                    }];
+
+RACSignal *signalC = [RACSignal createSignal:
+                      ^RACDisposable *(id<RACSubscriber> subscriber) {
+                          [subscriber sendNext:@"signal C1"];
+//                              [subscriber sendNext:@"signal C2"];
+                          [subscriber sendCompleted];
+                          return [RACDisposable disposableWithBlock:^{
+                              NSLog(@"signalC dispose");
+                          }];
+                      }];
+
+[[RACSignal zip:@[ signalA, signalB, signalC ]] subscribeNext:^(id x) {
+    NSLog(@"testZip: %@", x); // 打印元组 RACTuple
+}];
+
+// 打印
+// 因为 signalC 只发出了一个信号，所以没法消耗掉其他的，只会有一组打印
+/*
+ testZip: <RACTuple: 0x6000039c3e50> (
+ "signal A1",
+ "signal B1",
+ "signal C1"
+ )
+ **/
+ 
+```
+
+可以看出来，他其实是 zipWith 的加强版本。
+
+
+
+### zipWith
+
+两个信号压缩！要两个信号都发出信号，会将其内容合并成一个元组给你，然后下一次触发条件依然是两个信号都有发送。
+
+```
+
+RACSubject *subjectA = [RACSubject subject];
+RACSubject *subjectB = [RACSubject subject];
+
+RACSignal *zipSignal = [subjectA zipWith:subjectB];
+[zipSignal subscribeNext:^(id  _Nullable x) {
+    NSLog(@"testZipWith: %@", x); // 这里会压缩成一个元组
+}];
+
+[subjectA sendNext:@"subjectA 1"];
+[subjectA sendNext:@"subjectA 2"];
+[subjectA sendNext:@"subjectA 3"];
+
+[subjectB sendNext:@"subjectB 1"];
+[subjectB sendNext:@"subjectB 2"];
+
+
+// 打印
+// 1: 当 subjectB 只发送了一个信号 @"subjectB 1"，他只会消耗 subjectA 一个信号 @"subjectA 1"，所以 subjectA 之后的两个信号是没法被消耗的。
+/*
+ testZipWith: <RACTwoTuple: 0x600001983eb0> (
+ "subjectA 1",
+ "subjectB 1"
+ )
+ **/
+
+// 2: 如果 subjectB 发送了两个信号 @"subjectB 1"、@"subjectB 2"，他相应的就会消耗 subjectA 的两个信号。
+/*
+ testZipWith: <RACTwoTuple: 0x600003ef1460> (
+ "subjectA 1",
+ "subjectB 1"
+ )
+ 
+ testZipWith: <RACTwoTuple: 0x600003eec180> (
+ "subjectA 2",
+ "subjectB 2"
+ )
+ **/
+
+```
+
+
+
+### startWith
+
+在发送消息之前，先发送一个消息。
+
+```
+
+[[[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    [subscriber sendNext:@"signal A"];
+    [subscriber sendCompleted];
+    return nil;
+}] startWith:@"start with"] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"testStartWith: %@", x); // 先打印：testStartWith: start with 然后在打印：testStartWith: signal A
+}];
+
+```
+
+
