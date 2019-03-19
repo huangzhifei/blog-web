@@ -268,4 +268,187 @@ RACSignal *moreExecutionsAllowed = [RACSignal
 
 ### RACCommand 接口中的高阶信号
 
+每一个 RACCommand 对象中都管理着多个信号，它在接口中暴露出四个重要信号：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RACCommand-Interface.png)
+
+
+#### executionSignals
+
+`executionSignals ` 是 `RACCommand` 中最重要的信号；
+从类型来看，它是一个包含信号的信号，在每次执行 `-execute:` 方法时，最终都会向 `executionSignals` 中传入一个最新的信号。
+
+虽然它最重要，但是 `executionSignals` 是这个几个高阶信号中实现最简单的：
+
+```
+_executionSignals = [[[self.addedExecutionSignalsSubject
+    map:^(RACSignal *signal) {
+        return [signal catchTo:[RACSignal empty]];
+    }]
+    deliverOn:RACScheduler.mainThreadScheduler]
+    setNameWithFormat:@"%@ -executionSignals", self];
+```
+
+它只是将信号中的所有的错误 NSError 转换成了 RACEmptySignal 对象，并派发到主线程上。
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Execution-Signals.png)
+
+
+如果你只订阅了 executionSignals，那么其实你不会收到任何的错误，所有的错误都会以 -sendNext: 的形式被发送到 errors 信号中。
+
+#### executing
+
+`executing` 是一个表示当前是否有任务执行的信号，这个信号使用了在上一节中介绍的临时变量作为数据源：
+
+```
+
+_executing = [[[[[immediateExecuting
+    deliverOn:RACScheduler.mainThreadScheduler]
+    startWith:@NO]
+    distinctUntilChanged]
+    replayLast]
+    setNameWithFormat:@"%@ -executing", self];
+
+```
+
+这里对 immediateExecuting 的变换还是非常容易理解的：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Executing-Signal.png)
+
+
+最后的 `replayLast` 方法将原有的信号变成了容量为 `1` 的 `RACReplaySubject` 对象，这样在每次有订阅者订阅 `executing` 信号时，都只会发送最新的状态，因为订阅者并不关心过去的 `executing` 的值。
+
+
+#### enabled
+
+`enabled` 信号流表示当前的命令是否可以再次被执行，也就是 `-execute:` 方法能否可以成功执行新的任务；该信号流依赖于另一个私有信号 `immediateEnabled：`
+
+```
+
+RACSignal *enabledSignal = [RACSignal return:@YES];
+
+_immediateEnabled = [[[[RACSignal
+    combineLatest:@[ enabledSignal, moreExecutionsAllowed ]]
+    and]
+    takeUntil:self.rac_willDeallocSignal]
+    replayLast];
+
+```
+
+虽然这个信号的实现比较简单，不过它同时与三个信号有关，`enabledSignal`、`moreExecutionsAllowed` 以及 `rac_willDeallocSignal：`
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Immediate-Enabled-Signal.png)
+
+虽然图中没有体现出方法 `-takeUntil:self.rac_willDeallocSignal` 的执行，不过你需要知道，这个信号在当前 `RACCommand` 执行 `dealloc` 之后就不会再发出任何消息了。
+
+而 `enabled` 信号其实与 `immediateEnabled` 相差无几：
+
+```
+
+_enabled = [[[[[self.immediateEnabled
+    take:1]
+    concat:[[self.immediateEnabled skip:1] deliverOn:RACScheduler.mainThreadScheduler]]
+    distinctUntilChanged]
+    replayLast]
+    setNameWithFormat:@"%@ -enabled", self];
+
+```
+
+从名字你可以看出来，`immediateEnabled` 在每次原信号发送消息时都会重新计算，而 `enabled` 调用了 `-distinctUntilChanged` 方法，所以如果连续几次值相同就不会再次发送任何消息。
+
+除了调用 `-distinctUntilChanged` 的区别之外，你可以看到 `enabled` 信号在最开始调用了 `-take:` 和 `-concat:` 方法：
+
+```
+
+[[self.immediateEnabled
+		take:1]
+		concat:[[self.immediateEnabled skip:1] deliverOn:RACScheduler.mainThreadScheduler]];
+
+```
+
+虽然序列并没有任何的变化，但是在这种情况下，`enabled` 信号流中的第一个值会在订阅线程上到达，剩下的所有的值都会在主线程上派发；如果你知道，在一般情况下，我们都会使用 `enabled` 信号来控制 `UI` 的改变（例如 `UIButton`），相信你就会明白这么做的理由了。
+
+
+#### errors
+
+错误信号是 `RACCommand` 中比较简单的信号；为了保证 `RACCommand` 对此执行 `-execute:` 方法也可以继续运行，我们只能将所有的错误以其它的形式发送到 `errors` 信号中，防止向 `executionSignals` 发送错误信号后，`executionSignals` 信号就会中止的问题。
+
+我们使用如下的方式创建 errors 信号：
+
+```
+
+RACMulticastConnection *errorsConnection = [[[self.addedExecutionSignalsSubject
+    flattenMap:^(RACSignal *signal) {
+        return [[signal
+            ignoreValues]
+            catch:^(NSError *error) {
+                return [RACSignal return:error];
+            }];
+    }]
+    deliverOn:RACScheduler.mainThreadScheduler]
+    publish];
+
+_errors = [errorsConnection.signal setNameWithFormat:@"%@ -errors", self];
+[errorsConnection connect];
+
+```
+
+信号的创建过程是把所有的错误消息重新打包成 `RACErrorSignal` 并在主线程上进行派发：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Errors-Signals.png)
+
+
+使用者只需要调用 `-subscribeNext:` 就可以从这个信号中获取所有执行过程中发生的错误。
+
+
+### RACCommand 的使用
+
+`RACCommand` 非常适合封装网络请求，我们可以使用下面的代码封装一个网络请求：
+
+
+```
+
+RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+    return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+        AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:url];
+        NSString *URLString = [NSString stringWithFormat:@"/api/products/%@", input ?: @1];
+        NSURLSessionDataTask *task = [manager GET:URLString parameters:nil progress:nil
+             success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+                 [subscriber sendNext:responseObject];
+                 [subscriber sendCompleted];
+             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                 [subscriber sendError:error];
+             }];
+        return [RACDisposable disposableWithBlock:^{
+            [task cancel];
+        }];
+    }];
+}];
+
+```
+
+上面的 `RACCommand` 对象可以通过 `-execute:` 方法执行，同时，订阅 `executionSignals` 以及 `errors` 来获取网络请求的结果。
+
+```
+
+[[command.executionSignals switchToLatest] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"%@", x);
+}];
+[command.errors subscribeNext:^(NSError * _Nullable x) {
+    NSLog(@"%@", x);
+}];
+[command execute:@1];
+
+```
+
+向方法 `-execute:` 中传入了 `@1` 对象，从服务器中获取了 `id = 1` 的商品对象；当然，我们也可以传入不同的 `id` 来获取不同的模型，所有的网络请求以及 `JSON` 转换模型的逻辑都可以封装到这个 `RACCommand` 的 `block` 中，外界只是传入一个 `id`，最后就从 `executionSignals` 信号中获取了开箱即用的对象。
+
+### 总结
+
+使用 `RACCommand` 能够优雅地将包含副作用的操作和与副作用无关的操作分隔起来；整个 `RACCommand` 相当于一个黑箱，从 `-execute:` 方法中获得输入，最后以向信号发送消息的方式，向订阅者推送结果。
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RACCommand-Side-Effect.png)
+
+这种执行任务的方式就像是一个函数，根据输入的不同，有着不同的输出，非常适合与 `UI`、网络操作的相关的任务，这也是 `RACCommand` 的设计的优雅之处。
 
