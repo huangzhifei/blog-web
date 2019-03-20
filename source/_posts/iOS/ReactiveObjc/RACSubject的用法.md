@@ -13,7 +13,8 @@ categories: RAC
 
 在 `ReactiveCocoa` 中除了不可变的信号 `RACSignal`，也有用于桥接非 `RAC` 代码到 `ReactiveCocoa` 世界的『可变』信号 `RACSubject`。
 
-//图片
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Mutable-RACSignal—RACSubject.png)
+
 
 `RACSubject ` 到底是什么？根据其字面意思，可以将其理解为一个可以订阅的主题，我们在订阅主题之后，向主题发送新的消息时，所有的订阅者都会接收到最新的消息。
 
@@ -24,7 +25,8 @@ categories: RAC
 
 `RACSubject` 是 `RACSignal` 的子类，与 `RACSignal` 以及 `RACSequence` 有着众多的类簇不同，`RACSubject` 在整个工程中并没有多少子类，不过在大多数情况下，我们也只会使用 `RACSubject` 自己或者 `RACReplaySubject`。
 
-//图片
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RACSubject - Subclasses.png)
+
 
 相比于 `RACSignal` 丰富的头文件，`RACSignal` 对外的接口并没有提供太多的方法：
 
@@ -63,7 +65,8 @@ categories: RAC
 
 对于冷热信号概念，我们借用 Rx 中的描述：
 
-//图片
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Hot-Signal-And-Cold-Signal.png)
+
 
 冷信号是被动的，只会在订阅时向订阅者发送通知；
 
@@ -113,7 +116,8 @@ RACSubject *subject = [RACSubject subject];
 
 这里以图的方式来展示整个订阅与订阅者接收消息的过程：
 
-//图片
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Track-RACSubject-Subscription-Process.png)
+
 
 从图中我们可以清楚的看到，几个订阅者根据**订阅时间**的不同收到了不同的数字序列，`RACSubject` 是**时间相关**的，它在发送消息时只会向已订阅的订阅者推送消息。
 
@@ -150,10 +154,13 @@ RACSubject *subject = [RACSubject subject];
 订阅的过程分为三个部分：
 
 1、初始化一个 `RACPassthroughSubscriber` 实例；
+
 2、将 `subscriber` 加入 `RACSubject` 持有的数组中；
+
 3、创建一个 `RACDisposable` 对象，在当前 `subscriber` 销毁时，将自身从数组中移除。
 
-//图片
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Send-Subscibe-to-RACSubject.png)
 
 `-subscribe:` 将所有遵循 `RACSubscriber` 协议的对象全部加入当前 `RACSubject` 持有的数组 `subscribers` 中。
 
@@ -187,7 +194,7 @@ RACSubject *subject = [RACSubject subject];
 
 `RACSubject` 会在自身接受到这些方法时，下发给持有的全部的 `subscribers`。
 
-//图片
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Send-Messages-to-RACSubject.png)
 
 代码中的 `-enumerateSubscribersUsingBlock:` 只是一个使用 `for` 循环遍历 `subscribers` 的安全方法：
 
