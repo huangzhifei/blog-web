@@ -250,9 +250,231 @@ RACSubject *subject = [RACSubject subject];
 
 ## RACBehaviorSubject 与 RACReplaySubject
 
+这一节会介绍 `RACSubject` 的两个子类 `RACBehaviorSubject` 和 `RACReplaySubject`，前者在订阅时会向订阅者发送最新的消息，后者在订阅之后可以重新发送之前的所有消息序列。
+
 ### RACBehaviorSubject
+
+先来介绍两者中实现比较简单的 RACBehaviorSubject，它在内部会保存一个 currentValue 对象，也就是最后一次发送的消息：
+
+```
+
+@interface RACBehaviorSubject ()
+
+@property (nonatomic, strong) id currentValue;
+
+@end
+
+```
+
+在每次执行 `-sendNext:` 时，都会对 `RACBehaviorSubject` 中保存的 `currentValue` 进行更新，并使用父类的 `-sendNext：`方法，向所有的订阅者发送最新的消息:
+
+```
+
+- (void)sendNext:(id)value {
+	@synchronized (self) {
+		self.currentValue = value;
+		[super sendNext:value];
+	}
+}
+
+```
+
+`RACBehaviorSubject` 最重要的特性就是在订阅时，向最新的订阅者发送之前的消息，这是通过覆写 `-subscribe:` 方法实现的。
+
+在调用子类的 `-subscribe:` 方法之后，会在 `subscribe` 对象上执行 `-sendNext：`方法：
+
+```
+
+- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+	RACDisposable *subscriptionDisposable = [super subscribe:subscriber];
+
+	RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+		@synchronized (self) {
+			[subscriber sendNext:self.currentValue];
+		}
+	}];
+
+	return [RACDisposable disposableWithBlock:^{
+		[subscriptionDisposable dispose];
+		[schedulingDisposable dispose];
+	}];
+}
+
+```
+
+接下来，通过一个简单的例子来演示 `RACBehaviorSubject` 到底是如何工作的：
+
+```
+
+RACBehaviorSubject *subject = [RACBehaviorSubject subject];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"1st Sub: %@", x);
+}];
+[subject sendNext:@1];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"2nd Sub: %@", x);
+}];
+[subject sendNext:@2];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"3rd Sub: %@", x);
+}];
+[subject sendNext:@3];
+[subject sendCompleted];
+
+```
+
+上面的代码其实与 `RACSubject` 一节中的代码差不多，只将 `RACSubject` 转换成了 `RACBehaviorSubject` 对象。
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Track-RACBehaviorSubject-Subscription-Process.png)
+
+
+在每次订阅者订阅 `RACBehaviorSubject` 之后，都会向该订阅者发送最新的消息，这也就是 `RACBehaviorSubject` 最重要的行为。
+
+`RACBehaviorSubject` 有一个用于创建包含默认值的类方法 `+behaviorSubjectWithDefaultValue:`，如果将上面的第一行代码改成：
+
+```
+RACBehaviorSubject *subject = [RACBehaviorSubject behaviorSubjectWithDefaultValue:@0];
+
+```
+
+那么在第一个订阅者刚订阅 RACBehaviorSubject 时就会收到 @0 对象。
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Track-RACBehaviorSubject-Subscription-Process-With-Default-Value.png)
+
 
 ### RACReplaySubject
 
+`RACReplaySubject` 相当于一个自带 `buffer` 的 `RACBehaviorSubject`，它可以在每次有新的订阅者订阅之后发送之前的全部消息。
+
+```
+@interface RACReplaySubject ()
+
+@property (nonatomic, assign, readonly) NSUInteger capacity;
+@property (nonatomic, strong, readonly) NSMutableArray *valuesReceived;
+
+@end
+
+```
+
+实现的方式是通过持有一个 `valuesReceived` 的数组和能够存储的对象的上限 `capacity`，默认值为：
+
+```
+const NSUInteger RACReplaySubjectUnlimitedCapacity = NSUIntegerMax;
+
+```
+
+当然你可以用 `+replaySubjectWithCapacity:` 初始化一个其它大小的 `RACReplaySubject` 对象：
+
+```
+
++ (instancetype)replaySubjectWithCapacity:(NSUInteger)capacity {
+	return [(RACReplaySubject *)[self alloc] initWithCapacity:capacity];
+}
+
+- (instancetype)initWithCapacity:(NSUInteger)capacity {
+	self = [super init];
+
+	_capacity = capacity;
+	_valuesReceived = (capacity == RACReplaySubjectUnlimitedCapacity ? [NSMutableArray array] : [NSMutableArray arrayWithCapacity:capacity]);
+
+	return self;
+}
+
+```
+
+在每次调用 `-sendNext:` 方法发送消息时，都会将其加入 `valuesReceived` 数组中，并踢出之前的元素：
+
+```
+- (void)sendNext:(id)value {
+	@synchronized (self) {
+		[self.valuesReceived addObject:value ?: RACTupleNil.tupleNil];
+		[super sendNext:value];
+
+		if (self.capacity != RACReplaySubjectUnlimitedCapacity && self.valuesReceived.count > self.capacity) {
+			[self.valuesReceived removeObjectsInRange:NSMakeRange(0, self.valuesReceived.count - self.capacity)];
+		}
+	}
+}
+```
+
+需要注意的有两点，一是对 `valuesReceived` 的数组的操作必须使用 `@synchronized` 加锁；第二，如果 `value` 为空的话，也需要将其转换成 `RACTupleNil.tupleNil` 对象进行保存。
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Send-Messages-to-RACReplaySubject.png)
+
+
+`-sendError:` 和 `-sendCompleted` 方法都会标记对应 `flag`，即 `hasCompleted` 和 `hasError`，这里就不介绍了；同样的，`RACReplaySubject` 也覆写了 `-subscribe:` 方法，在每次有订阅者订阅时重新发送所有的序列：
+
+```
+
+- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+	RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];
+
+	RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+		@synchronized (self) {
+			for (id value in self.valuesReceived) {
+				if (compoundDisposable.disposed) return;
+
+				[subscriber sendNext:(value == RACTupleNil.tupleNil ? nil : value)];
+			}
+
+			if (compoundDisposable.disposed) return;
+
+			if (self.hasCompleted) {
+				[subscriber sendCompleted];
+			} else if (self.hasError) {
+				[subscriber sendError:self.error];
+			} else {
+				RACDisposable *subscriptionDisposable = [super subscribe:subscriber];
+				[compoundDisposable addDisposable:subscriptionDisposable];
+			}
+		}
+	}];
+
+	[compoundDisposable addDisposable:schedulingDisposable];
+
+	return compoundDisposable;
+}
+
+```
+
+我们仍然使用上一节中的例子来展示 `RACReplaySubject` 是如何工作的，只修改第一行代码：
+
+```
+
+RACReplaySubject *subject = [RACReplaySubject subject];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"1st Subscriber: %@", x);
+}];
+[subject sendNext:@1];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"2nd Subscriber: %@", x);
+}];
+[subject sendNext:@2];
+
+[subject subscribeNext:^(id  _Nullable x) {
+    NSLog(@"3rd Subscriber: %@", x);
+}];
+[subject sendNext:@3];
+[subject sendCompleted];
+
+```
+
+运行这段代码之后，会得到如下图的结果：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/Track-RACReplaySubject-Subscription-Process.png)
+
+
+所有订阅 `RACReplaySubject` 的对象（默认行为）都能获得完整的序列，而这个特性在与 `RACMulticastConnection` 一起使用也有着巨大威力，我们会在之后的文章中介绍。
+
 
 ## 总结
+
+`RACSubject` 在 `RACSignal` 对象之上进行了简单的修改，将原有的冷信号改造成了热信号，将不可变变成了可变。
+
+虽然 `RACSubject` 的实现并不复杂，只是存储了一个遵循 `RACSubscriber` 协议的对象列表以及所有的消息，但是在解决实际问题时却能够很好地解决很多与网络操作相关的问题。
+
