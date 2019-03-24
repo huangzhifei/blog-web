@@ -572,12 +572,330 @@ RACSignal *bindSignal = [signal bind:^RACSignalBindBlock _Nonnull{
 
 **关于 `_disposeBlock` 中的 self**
 
+`_disposeBlock` 是一个私有的指针变量，当 `void (^)(void)` 类型的 `block` 被传入之后都会转换成 CoreFoundation 中的类型并以 `void *` 的形式存入 `_disposeBlock` 中：
+
+```
+
++ (instancetype)disposableWithBlock:(void (^)(void))block {
+	return [[self alloc] initWithBlock:block];
+}
+
+- (instancetype)initWithBlock:(void (^)(void))block {
+	self = [super init];
+
+	_disposeBlock = (void *)CFBridgingRetain([block copy]); 
+	OSMemoryBarrier();
+
+	return self;
+}
+
+
+```
+
+奇怪的是，`_disposeBlock` 中不止会存储代码块 `block`，还有可能存储桥接之后的 `self`：
+
+```
+- (instancetype)init {
+	self = [super init];
+
+	_disposeBlock = (__bridge void *)self;
+	OSMemoryBarrier();
+
+	return self;
+}
+
+```
+
+这里，刚开始看到可能会觉得比较奇怪，有两个疑问需要解决：
+
+1. 为什么要提供一个 `-init` 方法来初始化 `RACDisposeable` 对象？
+2. 为什么要向 `_disposeBlock` 中传入当前对象？
+
+对于 `RACDisposable` 来说，虽然一个不包括 `_disposeBlock` 的对象没什么太多的意义，但是对于 `RACSerialDisposable` 等子类来说，却不完全是这样，因为 `RACSerialDisposable` 在 `-dispose` 时，并不需要执行 `disposeBlock`，这样就浪费了内存和 `CPU` 时间，但是同时我们需要一个合理的方法准确的判断当前对象的 `isDisposed`:
+
+```
+
+- (BOOL)isDisposed {
+	return _disposeBlock == NULL;
+}
+
+```
+
+所以，使用向 `_disposableBlock` 中传入 `NULL` 的方式来判断 `isDisposed`; 在 `-init` 调用时传入 `self` 而不是 `NULL` 防止状态被误判，这样就在不引入其他实例变量、增加对象的设计复杂度的同时，解决了这两个问题。
+
+#### -dispose: 方法的实现
+
+这个只有不到 20 行的 方法已经是整个 `RACDisposable` 类中最复杂的方法了：
+
+```
+
+- (void)dispose {
+	void (^disposeBlock)(void) = NULL;
+
+	while (YES) {
+		void *blockPtr = _disposeBlock;
+		if (OSAtomicCompareAndSwapPtrBarrier(blockPtr, NULL, &_disposeBlock)) {
+			if (blockPtr != (__bridge void *)self) {
+				disposeBlock = CFBridgingRelease(blockPtr);
+			}
+
+			break;
+		}
+	}
+
+	if (disposeBlock != nil) disposeBlock();
+}
+
+```
+
+但是其实它的实现也没有复杂到哪里去，从 `_disposeBlock` 实例变量中调用 `CFBridgingRelease` 取出一个 `disposeBlock`，然后执行这个 `block`，整个方法就结束了。
+
 
 ### RACSerialDisposable
 
+`RACSerialDisposable` 是一个用于持有 `RACDisposable` 的容器，它一次只能持有一个 `RACDisposable` 的实例，并可以原子地换出容器中保存的对象：
+
+```
+
+- (RACDisposable *)swapInDisposable:(RACDisposable *)newDisposable {
+	RACDisposable *existingDisposable;
+	BOOL alreadyDisposed;
+
+	pthread_mutex_lock(&_mutex);
+	alreadyDisposed = _disposed;
+	if (!alreadyDisposed) {
+		existingDisposable = _disposable;
+		_disposable = newDisposable;
+	}
+	pthread_mutex_unlock(&_mutex);
+
+	if (alreadyDisposed) {
+		[newDisposable dispose];
+		return nil;
+	}
+
+	return existingDisposable;
+}
+
+```
+
+线程安全的 `RACSerialDisposable` 使用 `pthred_mutex_t` 互斥锁来保证在访问关键变量时不会出现线程竞争问题。
+
+`-dispose` 方法的处理也十分简单：
+
+```
+- (void)dispose {
+	RACDisposable *existingDisposable;
+
+	pthread_mutex_lock(&_mutex);
+	if (!_disposed) {
+		existingDisposable = _disposable;
+		_disposed = YES;
+		_disposable = nil;
+	}
+	pthread_mutex_unlock(&_mutex);
+	
+	[existingDisposable dispose];
+}
+
+```
+
+使用锁保证线程安全，并在内部的 `_disposable` 换出之后在执行 `-dispose` 方法对订阅进行处理。
+
+
 ### RACCompoundDisposable
 
+与 `RACSerialDisposable` 只负责一个 `RACDisposable` 对象的释放不同；`RACCompoundDisposable` 同时负责多个 `RACDisposable` 对象的释放。
+
+相比于只管理一个 `RACDisposable` 对象的 `RACSerialDisposable`，`RACCompoundDisposable` 由于管理多个对象，其实现更加复杂，而且为了性能和内存占用之间的权衡，其实现方式是通过持有两个实例变量：
+
+```
+@interface RACCompoundDisposable () {
+    ...
+    RACDisposable *_inlineDisposables[RACCompoundDisposableInlineCount];
+
+    CFMutableArrayRef _disposables;
+    ...
+}
+
+```
+
+在对象持有的 `RACDisposable` 不超过 `RACCompoundDisposableInlineCount` 时，都会存储在 `_inlineDisposables` 数组中，而更多的实例都会存储在 `_disposables` 中：
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RACCompoundDisposable.png)
+
+
+`RACCompoundDisposable` 在使用 `-initWithDisposables:` 初始化时，会初始化两个 `RACDisposable` 的位置用于加速销毁订阅的过程，同时为了不浪费内存空间，在默认情况下只占用两个位置：
+
+```
+
+- (instancetype)initWithDisposables:(NSArray *)otherDisposables {
+	self = [self init];
+
+	[otherDisposables enumerateObjectsUsingBlock:^(RACDisposable *disposable, NSUInteger index, BOOL *stop) {
+		self->_inlineDisposables[index] = disposable;
+		if (index == RACCompoundDisposableInlineCount - 1) *stop = YES;
+	}];
+
+	if (otherDisposables.count > RACCompoundDisposableInlineCount) {
+		_disposables = RACCreateDisposablesArray();
+
+		CFRange range = CFRangeMake(RACCompoundDisposableInlineCount, (CFIndex)otherDisposables.count - RACCompoundDisposableInlineCount);
+		CFArrayAppendArray(_disposables, (__bridge CFArrayRef)otherDisposables, range);
+	}
+
+	return self;
+}
+
+```
+
+如果传入的 `otherDisposables` 多于 `RACCompoundDisposableInlineCount`，就会创建一个新的 `CFMutableArrayRef` 引用，并将剩余的 `RACDisposable` 全部传入这个数组中。
+
+在 `RACCompoundDisposable` 中另一个值得注意的方法就是 `-addDisposable:`
+
+```
+- (void)addDisposable:(RACDisposable *)disposable {
+	if (disposable == nil || disposable.disposed) return;
+
+	BOOL shouldDispose = NO;
+
+	pthread_mutex_lock(&_mutex);
+	{
+		if (_disposed) {
+			shouldDispose = YES;
+		} else {
+			for (unsigned i = 0; i < RACCompoundDisposableInlineCount; i++) {
+				if (_inlineDisposables[i] == nil) {
+					_inlineDisposables[i] = disposable;
+					goto foundSlot;
+				}
+			}
+
+			if (_disposables == NULL) _disposables = RACCreateDisposablesArray();
+			CFArrayAppendValue(_disposables, (__bridge void *)disposable);
+		foundSlot:;
+		}
+	}
+	pthread_mutex_unlock(&_mutex);
+	if (shouldDispose) [disposable dispose];
+}
+
+```
+
+在向 `RACCompoundDisposable` 中添加新的 `RACDisposable` 对象时，会先尝试在 `_inlineDisposables` 数组中寻找空闲的位置，如果没有找到，就会加入到 `_disposables` 中；但是，在添加 `RACDisposable` 的过程中也难免遇到当前 `RACCompoundDisposable` 已经 `dispose` 的情况，而这时就会直接 `-dispose` 刚刚加入的对象。
+
+
 ## 订阅的销毁过程
+
+在了解了 `ReactiveCocoa` 中与订阅销毁相关的类，我们就可以继续对 `-bind:` 方法的分析了，之前在分析该方法时省略了 `-bind:` 在执行过程中是如何处理订阅的清理和销毁的，所以会省略对于正常值和错误的处理过程，首先来看一下简化后的代码：
+
+```
+
+- (RACSignal *)bind:(RACSignalBindBlock (^)(void))block {
+    return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
+        RACSignalBindBlock bindingBlock = block();
+        __block volatile int32_t signalCount = 1;
+        RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];
+
+        void (^completeSignal)(RACDisposable *) = ...
+        void (^addSignal)(RACSignal *) = ...
+
+        RACSerialDisposable *selfDisposable = [[RACSerialDisposable alloc] init];
+        [compoundDisposable addDisposable:selfDisposable];
+        RACDisposable *bindingDisposable = [self subscribeNext:^(id x) {
+            BOOL stop = NO;
+            id signal = bindingBlock(x, &stop);
+
+            if (signal != nil) addSignal(signal);
+            if (signal == nil || stop) {
+                [selfDisposable dispose];
+                completeSignal(selfDisposable);
+            }
+        } completed:^{
+            completeSignal(selfDisposable);
+        }];
+        selfDisposable.disposable = bindingDisposable;
+        return compoundDisposable;
+    }] setNameWithFormat:@"[%@] -bind:", self.name];
+}
+
+```
+
+在简化的代码中，订阅的清理是由一个 `RACCompoundDisposable` 的实例负责的，向这个实例中添加 `RACSerialDisposable` 以及 `RACDisposable` 对象，并在 `RACCompoundDisposable` 销毁时销毁。
+
+`completeSignal` 和 `addSignal` 两个 `block` 主要负责处理新创建信号的清理工作：
+
+```
+
+void (^completeSignal)(RACDisposable *) = ^(RACDisposable *finishedDisposable) {
+    if (OSAtomicDecrement32Barrier(&signalCount) == 0) {
+        [subscriber sendCompleted];
+        [compoundDisposable dispose];
+    } else {
+        [compoundDisposable removeDisposable:finishedDisposable];
+    }
+};
+
+void (^addSignal)(RACSignal *) = ^(RACSignal *signal) {
+    OSAtomicIncrement32Barrier(&signalCount);
+    RACSerialDisposable *selfDisposable = [[RACSerialDisposable alloc] init];
+    [compoundDisposable addDisposable:selfDisposable];
+    RACDisposable *disposable = [signal completed:^{
+        completeSignal(selfDisposable);
+    }];
+    selfDisposable.disposable = disposable;
+};
+
+```
+
+先通过一个例子来看一下 `-bind:` 方法调用之后，订阅是如何被清理的：
+
+```
+RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+    [subscriber sendNext:@1];
+    [subscriber sendNext:@2];
+    [subscriber sendCompleted];
+    return [RACDisposable disposableWithBlock:^{
+        NSLog(@"Original Signal Dispose.");
+    }];
+}];
+RACSignal *bindSignal = [signal bind:^RACSignalBindBlock _Nonnull{
+    return ^(NSNumber *value, BOOL *stop) {
+        NSNumber *returnValue = @(value.integerValue);
+        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+            for (NSInteger i = 0; i < value.integerValue; i++) [subscriber sendNext:returnValue];
+            [subscriber sendCompleted];
+            return [RACDisposable disposableWithBlock:^{
+                NSLog(@"Binding Signal Dispose.");
+            }];
+        }];
+    };
+}];
+[bindSignal subscribeNext:^(id  _Nullable x) {
+    NSLog(@"%@", x);
+}];
+
+```
+
+在每个订阅创建以及所有的值发送之后，订阅就会被就地销毁，调用 `disposeBlock`，并从 `RACCompoundDisposable` 实例中移除：
+
+```
+1
+Binding Signal Dispose.
+2
+2
+Binding Signal Dispose.
+Original Signal Dispose.
+
+```
+
+原订阅的销毁时间以及绑定信号的控制是由 `SignalCount` 控制的，其表示 `RACCompoundDisposable` 中的 `RACSerialDisposable` 实例的个数，在每次有新的订阅被创建时都会向 `RACCompoundDisposable` 加入一个新的 `RACSerialDisposable`，并在订阅发送结束时从数组中移除，整个过程用图示来表示比较清晰：
+
+
+![](https://github.com/huangzhifei/blog-web/raw/master/source/_posts/images/RACSignal-Bind-Disposable.png)
+
+
+紫色的 `RACSerialDisposable` 为原订阅创建的对象，灰色的为新信号订阅的对象。
 
 ## 总结
 
