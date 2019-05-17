@@ -8,10 +8,8 @@ tags: 待办
 
 # TODO check list
 
-## Category中添加属性名或方法冲突了怎么办？
-
-[https://www.jianshu.com/p/1f8e91140feb]()
-[https://blog.csdn.net/WOTors/article/details/52576433]()
+## iOS 开发 Skeleton Screen 加载占位图
+见印象笔记
 
 ## QQ、微信技术分享
 
