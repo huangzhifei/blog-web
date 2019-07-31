@@ -152,6 +152,10 @@ git pull 或 git pull origin xxxx 或 git fetch
 ```
 
 不带 xxxx 就是默认是获取当前，带上 xxxx 就是指定 xxxx 分支来获取
+例如远程分支名：`remotes/origin/feature/test_xx_yy`
+```
+git pull origin feature/test_xx_yy
+```
 
 ### 2、推送内容到远端
 
