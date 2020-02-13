@@ -95,3 +95,65 @@ UIView *searchField = [bar valueForKey:@"_searchField"];
 @end
 ```
 
+### 3、推送的 deviceToken 获取到的格式发生变化
+
+原本可以直接将 NSData 类型的 deviceToken 转换成 NSString 字符串，然后替换掉多余的符号即可：
+
+```
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSString *token = [deviceToken description];
+    for (NSString *symbol in @[@" ", @"<", @">", @"-"]) {
+        token = [token stringByReplacingOccurrencesOfString:symbol withString:@""];
+    }
+    NSLog(@"deviceToken:%@", token);
+}
+```
+
+在 iOS 13 中，这种方法已经失效，NSData类型的 deviceToken 转换成的字符串变成了：
+
+```
+{length = 32, bytes = 0xd7f9fe34 69be14d1 fa51be22 329ac80d ... 5ad13017 b8ad0736 } 
+```
+
+**解决方案**
+
+需要进行一次数据格式处理，[友盟](https://developer.umeng.com/docs/66632/detail/126489)提供了一种做法，可以适配新旧系统：
+
+```
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    if (![deviceToken isKindOfClass:[NSData class]]) return;
+    const unsigned *tokenBytes = [deviceToken bytes];
+    // 数据格式处理
+    NSString *hexToken = [NSString stringWithFormat:@"%08x%08x%08x%08x%08x%08x%08x%08x",
+                          ntohl(tokenBytes[0]), ntohl(tokenBytes[1]), ntohl(tokenBytes[2]),
+                          ntohl(tokenBytes[3]), ntohl(tokenBytes[4]), ntohl(tokenBytes[5]),
+                          ntohl(tokenBytes[6]), ntohl(tokenBytes[7])];
+    NSLog(@"deviceToken:%@", hexToken);
+}
+
+```
+
+但是注意到这种方法限定了长度，而[官网文档](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application?language=objc)对此方法的说明中提到，APNs device tokens are of variable length. Do not hard-code their size. ，因此可以对数据格式处理部分进行优化：
+
+```
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    if (![deviceToken isKindOfClass:[NSData class]]) {
+        return;
+    }
+    NSMutableString *deviceTokenString = [NSMutableString string];
+    const unsigned char *tokenBytes = deviceToken.bytes; 
+    NSInteger count = deviceToken.length;
+    
+    // 数据格式处理
+    NSMutableString *hexToken = [NSMutableString string];
+    for (int i = 0; i < count; ++i) {
+        [hexToken appendFormat:@"%02x", tokenBytes[i]];
+    }
+    NSLog(@"deviceToken:%@", hexToken);
+}
+```
+
+### 4、还有不少需要适配的地址详见下面的地址
+
+[iOS 13 适配要点总结](https://juejin.im/post/5d8af88ef265da5b6e0a23ac)
+
